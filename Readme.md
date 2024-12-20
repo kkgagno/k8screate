@@ -3,8 +3,10 @@
 ```
 Prerequirements:
 - Ubuntu 22.04 server for all components, ssh keypair usage required
+
+Devbox:
 - Development Box, Ubuntu 22.04, Ansible 2.17.7, (MySQL 8.0.40 required for Semaphore)
-      #Install pipx AND ansible
+      #Install pipx AND ansible procedure
        sudo apt install pipx
        pipx install --include-deps ansible
        pipx ensurepath
