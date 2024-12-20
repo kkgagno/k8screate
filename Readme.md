@@ -91,16 +91,7 @@ k8shosts needs to be populated as well as k8svars.yaml.
 
 ```
 
-The playbook does reboot hosts by default.  
 
-
-- to make work with gcp.yml file as inventory - specify projects and will detect all and run  
-- using gcp.yml enables ansible to grab GCP related info on instances and can be pulled into a yaml file  
-- this would work nicely if we were patching full list of hosts in projects.  
-- Steps to be able run:  
-sudo apt install python3-pip  
-sudo pip3 install google-auth  
-ex.. ansible-playbook snapsonly.yaml -i ansible.gcp.yml  
 
 ---
 
