@@ -57,6 +57,7 @@ k8shosts needs to be populated as well as k8svars.yaml.
     - ansible-playbook k8screate.yaml -i k8shosts
 
 ##TO RUN EACH SEPERATELY, EACH OF THESE IS CALLED IN BELOW ORDER WITHIN k8screate.yaml. k8shosts needs to be populated as well as k8svars.yaml.
+#CAN REFER TO PICS FOLDER IN REPO FOR BELOW YAML BREAKDOWN OF EVENTS.
 ###To create NGINX load balancer for Endpoint
     - ansible-playbook k8s_endpoint.yaml -i k8shosts
 
