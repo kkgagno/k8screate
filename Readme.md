@@ -70,9 +70,6 @@ k8shosts needs to be populated as well as k8svars.yaml.
 ###To install requirements onto worker nodes
     - ansible-playbook k8s_wrkr_reqs.yaml -i k8shosts
 
-###To install requirements onto worker nodes
-    - ansible-playbook k8s_wrkr_reqs.yaml -i k8shosts
-
 ###To initiate first controller and get info for additonal controllers and worker join info
     - ansible-playbook k8s_controller.yaml -i k8shosts
 
