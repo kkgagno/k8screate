@@ -1,0 +1,202 @@
+- name: Import vars
+  run_once: yes
+  include_vars:
+    file: k8svars.yml
+    name: vardata
+
+- name: Check if kubeapi is running
+  shell: "pgrep kube-apiserver"
+  register: running_process
+  ignore_errors: yes
+  #failed_when: running_process.rc < 1
+- debug:
+    msg: "Kube API is running"
+  when: running_process.stdout_lines|length > 0
+  ignore_errors: yes
+- meta: end_host
+  when: running_process.stdout_lines|length > 0
+  ignore_errors: yes
+
+- name: Initialize Kubernetes master
+  command: kubeadm init --control-plane-endpoint={{ vardata.nginxlb }} --upload-certs  #--pod-network-cidr={{ vardata.podnetwork }} 
+  
+  register: kubeadm_output
+  ignore_errors: yes
+#- debug:
+#    msg: "{{ kubeadm_output.stdout }}"
+
+- name: Set up kubectl for the current user
+  become: no
+  command: "{{ item }}"
+  with_items:
+      - "sudo mkdir -p $HOME/.kube"
+      - "sudo cp /etc/kubernetes/admin.conf $HOME/.kube/config"
+      # - "sudo chown $(id -u):$(id -g) $HOME/.kube/config"
+      - "sudo chown -R $USER $HOME/.kube"
+
+- name: Download cilium
+  ansible.builtin.get_url:
+    url: https://github.com/cilium/cilium-cli/releases/latest/download/cilium-linux-amd64.tar.gz
+    dest: /etc/cilium-linux-amd64.tar.gz
+    mode: '0440'
+
+- name: Extract cilium.tgz into /usr/local/bin
+  ansible.builtin.unarchive:
+    src: /etc/cilium-linux-amd64.tar.gz
+    dest: /usr/local/bin
+    remote_src: yes
+
+- name: Remove file (delete file)
+  ansible.builtin.file:
+    path: /etc/cilium-linux-amd64.tar.gz
+    state: absent
+
+- name: install cilium
+  shell: "cilium install --set ipam.operator.clusterPoolIPv4PodCIDRList={{ vardata.podnetwork }}"
+  register: cilium
+- debug:
+     msg:
+      - "{{ cilium.stdout }}"
+
+
+- name: Download Helm
+  ansible.builtin.get_url:
+    url: https://get.helm.sh/helm-v3.16.3-linux-amd64.tar.gz
+    dest: /etc/helm-v3.16.3-linux-amd64.tar.gz
+    mode: '0440'
+
+- name: Extract helm.gz 
+  ansible.builtin.unarchive:
+    src: /etc/helm-v3.16.3-linux-amd64.tar.gz
+    dest: $HOME/
+    remote_src: yes
+
+- name: Remove helm tar file (delete file)
+  ansible.builtin.file:
+    path: /etc/helm-v3.16.3-linux-amd64.tar.gz
+    state: absent
+
+- name: Copy file with owner and permissions
+  ansible.builtin.copy:
+    src: $HOME/linux-amd64/
+    dest: /usr/local/bin/
+    remote_src: yes
+
+- name: Add traefik repo, create traefik namespace, and install traefik
+  become: yes
+  command: "{{ item }}"
+  with_items:
+      - "helm repo add traefik https://traefik.github.io/charts"
+      - "helm repo update"
+      - "kubectl create ns traefik-v2"
+      - "helm install -n traefik-v2 traefik traefik/traefik"
+
+
+
+#- name: Install Calico network plugin
+#  become: no
+#  shell: "kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml"
+
+
+
+- name: Command for workers to join
+  shell: "kubeadm token create --print-join-command > /etc/joincluster"
+  register: joincmd
+- debug:
+     msg:
+       - "{{ joincmd.stdout }}"
+- set_fact:
+     join = "{{ joincmd.stdout }}"   
+
+- name: read file into var
+  shell: "cat /etc/joincluster"
+  register: joincluster
+- debug:
+    msg:
+     - "{{ joincluster }}"
+
+- name: Get cert for controller join
+  shell: "kubeadm init phase upload-certs --upload-certs > /etc/temp.txt"
+  register:  file
+- debug:
+     msg:
+       - "{{ file.stdout }}"
+  
+- name: Get last line from cert file, actual cert
+  shell: "tail -1 /etc/temp.txt > /etc/cert"
+  register: certs
+#- debug:
+#     msg:
+#       - "{{ certs.stdout }}"
+#- set_fact:
+#     cert = "{{ certs.stdout }}"
+
+- name: read cert into var
+  #become: no
+  shell: "cat /etc/cert"
+  register: cert
+- debug:
+    msg:
+      - "{{ cert.stdout }}"
+
+
+- name: Create join file
+  file:
+      path: "/etc/joincluster"
+      state: touch
+  delegate_to: localhost
+
+- name: add contents to file
+  copy:
+      dest: "/etc/joincluster"
+      content: |
+        {{ joincluster.stdout }}                        
+  delegate_to: localhost
+
+- name: Create controller join file
+  file:
+      path: "/etc/ctrljoincluster"
+      state: touch
+  delegate_to: localhost
+
+- name: add contents controller join to file
+  copy:
+      dest: "/etc/ctrljoincluster"
+      content: |
+        {{ joincluster.stdout }} --control-plane --certificate-key  {{ cert.stdout }}                       
+  delegate_to: localhost
+
+- name: read kubecfg into var
+  become: no
+  shell: "cat $HOME/.kube/config"
+  register: kubecfg
+- debug:
+    msg:
+      - "{{ kubecfg.stdout }}"
+
+- name: Create kubecfg file local
+  file:
+      path: "/etc/kubeconfig"
+      state: touch
+  delegate_to: localhost
+
+- name: add contents to file
+  copy:
+      dest: "/etc/kubeconfig"
+      content: |
+        {{ kubecfg.stdout }}                        
+  delegate_to: localhost
+
+- name: Set up kubectl for the root user
+  become: yes
+  command: "{{ item }}"
+  with_items:
+      - "sudo mkdir -p $HOME/.kube"
+      - "sudo chown -R $USER $HOME/.kube"
+
+- name: add master kubeconfig local root
+  become: yes
+  copy:
+    content: "{{ kubecfg.stdout }}"
+    dest: "$HOME/.kube/config"
+

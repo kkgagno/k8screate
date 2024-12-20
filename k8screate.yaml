@@ -1,0 +1,12 @@
+---
+#- import_playbook: login.yaml
+- import_playbook: k8s_endpoint.yaml
+- import_playbook: k8s_ctrl_reqs.yaml
+- import_playbook: k8s_addl_ctrl_reqs.yaml
+- import_playbook: k8s_wrkr_reqs.yaml
+- import_playbook: k8s_controller.yaml
+- import_playbook: k8s_addl_controllers.yaml
+- import_playbook: k8s_workers.yaml
+#- import_playbook: ./UBUNTU22-CIS/site.yml
+- import_playbook: k8s_metallb.yaml
+#- import_playbook: logoff.yaml

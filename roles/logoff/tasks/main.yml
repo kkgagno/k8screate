@@ -1,0 +1,29 @@
+---
+
+  #- name: remove key to compute engine
+  #  become: no   
+  #  shell: "gcloud compute os-login ssh-keys remove --key-file oslogin.pub"
+  #  delegate_to: localhost
+  #  register: shell_result
+  #   run_once: true    
+  #- debug:
+  #    msg: 
+  #      - "{{ shell_result.stdout }}"
+
+  - name: Remove SSH keypair
+    become: no
+    openssh_keypair:
+      path: oslogin
+      state: absent
+    run_once: true
+    delegate_to: localhost
+    check_mode: no
+
+  - name: Remove SC json
+    become: no
+    openssh_keypair:
+      path: sc.json
+      state: absent
+    run_once: true
+    delegate_to: localhost
+    check_mode: no

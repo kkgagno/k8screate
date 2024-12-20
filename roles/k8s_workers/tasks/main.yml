@@ -1,0 +1,82 @@
+- block:
+
+   - name: Check if kubelet is running
+     shell: "pgrep kubelet"
+     register: running_process
+     ignore_errors: true
+     failed_when: running_process.rc < 1
+   - debug:
+       msg: "Kubelet is running"
+     when: running_process.stdout_lines|length > 0
+   - meta: end_host
+     when: running_process.stdout_lines|length > 0
+  rescue:
+      - fail:
+          msg: "kubelet not running"
+        ignore_errors: "{{ ignore_flag | default(false) | bool }}"
+
+- name: Load join command
+  delegate_to: localhost
+  command: cat /etc/joincluster
+  register: command_output
+- set_fact:
+   joincluster = "{{ command_output.stdout }}"
+- debug:
+    msg: 
+     - "{{ command_output.stdout }}"
+
+
+- name: Add to cluster
+  become: yes
+  command: "{{ command_output.stdout }}"
+  register: join_result
+  ignore_errors: yes
+- set_fact:     
+   joinresult = "{{ join_result.stdout }}"
+- debug:
+      msg: 
+      - "{{ join_result.stdout }}"
+
+- name: Load kubecfg
+  delegate_to: localhost
+  command: cat /etc/kubeconfig
+  register: command_output
+- set_fact:
+   kubecfg = "{{ command_output.stdout }}"
+- debug:
+    msg: 
+     - "{{ command_output.stdout }}"
+
+- name: Set up kubectl for the current user
+  become: no
+  command: "{{ item }}"
+  with_items:
+      - "sudo mkdir -p $HOME/.kube"
+      - "sudo chown -R $USER $HOME/.kube"
+
+- name: kubecfg create local file
+  become: no
+  file:
+      path: "$HOME/.kube/config"
+      state: touch
+      
+- name: add master kubeconfig local
+  become: no
+  copy:
+    content: "{{ command_output.stdout }}"
+    dest: "$HOME/.kube/config"
+
+- name: Set up kubectl for the root user
+  become: yes
+  command: "{{ item }}"
+  with_items:
+      - "sudo mkdir -p $HOME/.kube"
+      - "sudo chown -R $USER $HOME/.kube"
+
+- name: add master kubeconfig local root
+  become: yes
+  copy:
+    content: "{{ command_output.stdout }}"
+    dest: "$HOME/.kube/config"
+  
+

@@ -1,0 +1,5 @@
+---
+  - hosts: endpoint
+    become: yes
+    roles:
+      - { role: k8s_endpoint }

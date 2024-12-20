@@ -1,0 +1,109 @@
+---
+- name: Import vars
+  run_once: yes
+  include_vars:
+    file: vars.yml
+    name: vardata
+
+
+- name: Remove SSH keypair
+  become: no
+  openssh_keypair:
+    path: oslogin
+    state: absent
+  run_once: true
+  delegate_to: localhost
+  check_mode: no
+
+- name: Remove SC json
+  become: no
+  openssh_keypair:
+    path: sc.json
+    state: absent
+  run_once: true
+  delegate_to: localhost
+  check_mode: no
+
+
+- name: Get project name 
+  shell: "gcloud config get-value project 2> /dev/null"
+  register: project_result
+- debug:
+    msg: 
+      - "{{ project_result.stdout }}"
+- set_fact:     
+      project="{{ project_result.stdout }}"
+
+- name: get private key  
+  become: no
+#  tags:
+#    - login        
+  shell: "gcloud secrets versions access latest --project={{ vardata.gcpproject }} --secret={{ vardata.sshcred }} > oslogin"
+  delegate_to: localhost
+  register: create
+  run_once: true
+- debug:
+     msg:
+       - "{{ create.stdout }}"
+
+- name: get sc json key  
+  become: no
+#  tags:
+#    - login        
+  shell: "gcloud secrets versions access latest --project={{ vardata.gcpproject }} --secret={{ vardata.scjson }} > sc.json"
+  delegate_to: localhost
+  register: create
+  run_once: true
+- debug:
+     msg:
+      - "{{ create.stdout }}"
+
+- name: Change file permissions
+  ansible.builtin.file:
+    path: oslogin
+    mode: '0600'
+
+- name: Change file permissions
+  ansible.builtin.file:
+    path: sc.json
+    mode: '0600'
+
+
+#- name: Login service account  
+#  become: no
+#  tags:
+#    - login        
+#  shell: "gcloud auth activate-service-account gitman@test-ground-403314.iam.gserviceaccount.com --key-file=sc.json"
+#  delegate_to: localhost
+#  register: create
+#  run_once: true
+#- debug:
+#     msg:
+#       - "{{ create.stdout }}"
+
+#- name: create key pair  
+#  become: no
+#  tags:
+#    - login        
+#  shell: "echo \"y\" |ssh-keygen -t rsa -q -f oslogin -N \"\""
+#  delegate_to: localhost
+#  register: create
+#  run_once: true
+#- debug:
+#     msg:
+#       - "{{ create.stdout }}"
+
+
+#- name: upload key to gcp
+#  become: no
+#  tags:
+#    - login
+#  shell: "gcloud compute os-login ssh-keys add --key-file oslogin.pub --ttl 30m"
+#  register: shell_result
+#  run_once: true
+#- debug:
+#    msg: 
+#      - "{{ shell_result.stdout }}"
+
+
+      

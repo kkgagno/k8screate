@@ -1,0 +1,6 @@
+---
+  - hosts: master
+    become: yes
+    roles:
+      - { role: k8s_ctrl_reqs, when: (inventory_hostname != "localhost") }
+

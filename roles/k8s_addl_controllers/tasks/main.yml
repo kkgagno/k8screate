@@ -1,0 +1,78 @@
+- name: Check if kubeapi is running
+  shell: "pgrep kube-apiserver"
+  register: running_process
+  ignore_errors: yes
+  #failed_when: running_process.rc < 1
+- debug:
+    msg: "Kube API is running"
+  when: running_process.stdout_lines|length > 0
+  ignore_errors: yes
+- meta: end_host
+  when: running_process.stdout_lines|length > 0
+  ignore_errors: yes
+
+- name: time synch...for when restoring from snap
+  become: yes
+  shell: "{{ item }}"
+  with_items:    
+    - "date -s \"$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z\""
+  register: command_output
+
+- name: Load join command
+  delegate_to: localhost
+  command: cat /etc/ctrljoincluster
+  register: command_output
+- set_fact:
+   joincluster = "{{ command_output.stdout }}"
+- debug:
+    msg: 
+     - "{{ command_output.stdout }}"
+
+
+- name: Add to cluster
+  become: yes
+  command: "{{ command_output.stdout }}"
+  register: join_result
+  ignore_errors: yes
+- set_fact:     
+   joinresult = "{{ join_result.stdout }}"
+- debug:
+      msg: 
+      - "{{ join_result.stdout }}"
+
+
+
+
+- name: Set up kubectl for the current user
+  become: no
+  command: "{{ item }}"
+  with_items:
+      - "sudo mkdir -p $HOME/.kube"
+      - "sudo cp /etc/kubernetes/admin.conf $HOME/.kube/config"
+      # - "sudo chown $(id -u):$(id -g) $HOME/.kube/config"
+      - "sudo chown -R $USER $HOME/.kube"
+
+
+
+- name: read kubecfg into var
+  become: no
+  shell: "cat $HOME/.kube/config"
+  register: kubecfg
+- debug:
+    msg:
+      - "{{ kubecfg.stdout }}"
+
+
+- name: Set up kubectl for the root user
+  become: yes
+  command: "{{ item }}"
+  with_items:
+      - "sudo mkdir -p $HOME/.kube"
+      - "sudo chown -R $USER $HOME/.kube"
+
+- name: add master kubeconfig local root
+  become: yes
+  copy:
+    content: "{{ kubecfg.stdout }}"
+    dest: "$HOME/.kube/config"
+

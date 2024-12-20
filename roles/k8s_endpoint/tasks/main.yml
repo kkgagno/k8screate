@@ -1,0 +1,92 @@
+- name: Import vars
+  run_once: yes
+  include_vars:
+    file: k8svars.yml
+    name: vardata
+
+
+- name: Check if nginx is running
+  shell: "ps cax |grep nginx"
+  register: running_process
+  ignore_errors: yes
+  #failed_when: running_process.rc < 1
+- debug:
+    msg: "NGINX is running"
+  when: running_process.stdout_lines|length > 0
+  ignore_errors: yes
+- meta: end_host
+  when: running_process.stdout_lines|length > 0
+  ignore_errors: yes
+
+- name: time synch...for when restoring from snap
+  become: yes
+  shell: "{{ item }}"
+  with_items:    
+    - "date -s \"$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z\""
+  register: command_output
+
+#date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z"
+
+- name: Install nginx-core
+  apt:
+    name:  nginx-core
+    state: present
+    update_cache: true
+  #when: running_process.stdout_lines|length = 0
+  
+- name: Remove default nginx.conf (delete file)
+  ansible.builtin.file:
+    path: "/etc/nginx/nginx.conf"
+    state: absent
+  #when: running_process.stdout_lines|length = 0
+
+- name: Create nginx.conf on host
+  file:
+      path: "/etc/nginx/nginx.conf"
+      state: touch
+  #when: running_process.stdout_lines|length = 0
+    
+- name: nginx.conf add block of lines
+  blockinfile:
+    path: "/etc/nginx/nginx.conf"  
+    state: present
+    block: |
+      user www-data;
+      worker_processes auto;
+      pid /run/nginx.pid;
+      include /etc/nginx/modules-enabled/*.conf;
+
+      events {
+             worker_connections 768;
+            # multi_accept on;
+      }
+
+
+      stream {
+         upstream stream_backend {
+             least_conn;
+             server {{ vardata.controlplane1 }}:6443;
+             server {{ vardata.controlplane2 }}:6443;
+             server {{ vardata.controlplane3 }}:6443;
+          }
+    
+         server {
+             listen        6443;
+             proxy_pass    stream_backend;
+             proxy_timeout 3s;
+             proxy_connect_timeout 1s;
+          }
+      }
+  #when: running_process.stdout_lines|length = 0  
+
+- name: Restart nginx with new config file
+  become: yes
+  shell: "{{ item }}"
+  with_items:    
+    - "service nginx restart"
+    - "service nginx status"
+  register: command_output
+  #when: running_process.stdout_lines|length = 0
+#- debug:
+#    msg: 
+#      - "{{ command_output.stdout }}"

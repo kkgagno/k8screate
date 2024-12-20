@@ -1,0 +1,14 @@
+---
+  - hosts: all
+    gather_facts: false
+    become: no
+    roles:
+      - { role: logoff, when: ( 'localhost' in inventory_hostname ) }   
+
+
+                                                                 
+    #vars:
+    #  reboot_ok: true
+
+# How to run
+# ansible-playbook -b -u <user> --private-key <path to key> -i hosts -l <host-group> main.yml [--extra-vars reboot_ok=true]

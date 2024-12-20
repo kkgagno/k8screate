@@ -1,0 +1,29 @@
+---
+  - hosts: all
+    gather_facts: false
+    become: no
+    roles:
+      - { role: login, when: ( 'localhost' in inventory_hostname ) }   
+ 
+  #- hosts: all
+  #  tasks:  
+  #  - import_role:
+  #      name: uname
+
+  #  - name: Run uname task      
+  #    import_role:
+  #      name: uname
+  #      tasks_from: /roles/uname/tasks/main.yml
+
+  #  - name: Run unattended update dryrun      
+  #    import_role:
+  #      name: apt_update_check
+  #      tasks_from: /roles/apt_update_check/tasks/main.yml
+
+   
+                                                                 
+    #vars:
+    #  reboot_ok: true
+
+# How to run
+# ansible-playbook -b -u <user> --private-key <path to key> -i hosts -l <host-group> main.yml [--extra-vars reboot_ok=true]

@@ -1,0 +1,149 @@
+---
+- name: Check if kube api is running
+  shell: "pgrep kube-apiserver"
+  register: running_process
+  ignore_errors: yes
+- debug:
+    msg:
+     - "{{ running_process.stdout_lines }}"
+  when: running_process.stdout_lines|length > 0
+
+- name: time synch...for when restoring from snap
+  become: yes
+  shell: "{{ item }}"
+  with_items:    
+    - "date -s \"$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z\""
+  register: command_output   
+
+- name: If KubeAPI  running get join command
+  shell: "kubeadm token create --print-join-command > /etc/joincluster"
+  when: running_process.stdout_lines|length > 0
+
+- name: read join file into var
+  shell: "cat /etc/joincluster"
+  when: running_process.stdout_lines|length > 0
+  register: joincluster
+- debug:
+    msg:
+     - "{{ joincluster }}" 
+  when: running_process.stdout_lines|length > 0
+
+- name: Create join file on ansible host
+  file:
+      path: "/etc/joincluster"
+      state: touch
+  delegate_to: localhost
+  when: running_process.stdout_lines|length > 0
+
+- name: add contents to ansible host join file
+  copy:
+      dest: "/etc/joincluster"
+      content: |
+        {{ joincluster.stdout }}                        
+  delegate_to: localhost
+  when: running_process.stdout_lines|length > 0
+
+- name: read kubecfg into var
+  become: no
+  shell: "cat $HOME/.kube/config"
+  register: kubecfg
+  when: running_process.stdout_lines|length > 0
+  #- debug:
+  #  when: running_process.stdout_lines|length > 0
+  #  msg:
+  #    - "{{ kubecfg.stdout }}"
+
+- name: Create kubecfg file local
+  file:
+      path: "/etc/kubeconfig"
+      state: touch
+  delegate_to: localhost
+  when: running_process.stdout_lines|length > 0
+
+- name: add contents to file
+  copy:
+      dest: "/etc/kubeconfig"
+      content: |
+        {{ kubecfg.stdout }}                        
+  delegate_to: localhost
+  when: running_process.stdout_lines|length > 0
+- meta: end_host
+  when: running_process.stdout_lines|length > 0
+
+- name: Install ContainerD
+  apt:
+    name:  containerd
+    state: present
+    update_cache: true
+
+- name: enable IPv4 forwarding
+  shell: |
+     sed -i 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/' /etc/sysctl.conf
+     sysctl -p
+
+- name: Download Releasekey  
+  become: yes
+  shell: "curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg --yes"
+  register: key
+- debug:
+     msg:
+       - "{{ key.stdout }}"
+
+- name: echo to sources list
+  become: yes
+  shell: "echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list"
+  register: list
+- debug:
+     msg:
+       - "{{ list.stdout }}"
+
+
+- name: Update apt repo and cache on all Debian/Ubuntu boxes
+  apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
+
+- name: Upgrade all packages on servers
+  apt: upgrade=dist force_apt_get=yes
+
+- name: Check if a reboot is needed on all servers
+  register: reboot_required_file
+  stat: path=/var/run/reboot-required
+
+- name: Reboot the box if kernel updated
+  reboot:
+    msg: "Reboot initiated by Ansible for kernel updates"
+    connect_timeout: 5
+    reboot_timeout: 300
+    pre_reboot_delay: 0
+    post_reboot_delay: 30
+    test_command: uptime
+  when: reboot_required_file.stat.exists
+
+
+- name: Install kubeadm, kubelet, and kubectl
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: true
+  loop:
+    - kubeadm
+    - kubelet
+    - kubectl
+
+- name: system parameters for K8s initiate
+  become: yes
+  shell: "{{ item }}"
+  with_items:
+          - "sudo swapoff -a"
+          - "sudo sed -i '/ swap / s/^\\(.*\\)$/#\\1/g' /etc/fstab"
+          - "printf '%s\\n' 'overlay' 'br_netfilter' >/etc/modules-load.d/containerd.conf"
+          - "sudo modprobe overlay"
+          - "sudo modprobe br_netfilter"
+          - "printf '%s\\n' 'net.bridge.bridge-nf-call-ip6tables = 1' 'net.bridge.bridge-nf-call-iptables = 1' 'net.ipv4.ip_forward = 1' >/etc/sysctl.d/kubernetes.conf"
+          - "sudo sysctl --system"
+          - "printf '%s\\n' 'KUBELET_EXTRA_ARGS=\"--cgroup-driver=cgroupfs\"'  >/etc/default/kubelet"
+          - "sudo systemctl daemon-reload && sudo systemctl restart kubelet"
+
+  register: key
+  #- debug:
+  #   msg:
+  #     - "{{ key.stdout }}"

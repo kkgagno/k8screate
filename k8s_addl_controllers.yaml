@@ -1,0 +1,5 @@
+---
+  - hosts: addl_controllers
+    become: yes
+    roles:
+      - { role: k8s_addl_controllers }
