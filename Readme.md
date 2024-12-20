@@ -1,27 +1,29 @@
 # Linux Patching Playbook (Ubuntu/Debian/RHEL/CentOS/Amazon Linux)
 Prerequirements:
-Ubuntu server to run on
-    -with Google SDK installed (there by default if GCP image)  
-    -Ansible installed  (apt-get update),(apt-get install ansible)   
-    -Ansible galaxy collection GCE snap module (ansible-galaxy collection install community.google)  
-    -Authed to GCP SDK with proper permissions osadmin, ...etc  
-    -(Compute Instance Admin or custom) permissions needed from service account being used by ansible host machine/service account authed  
-            - If Custom role, the following permissions are needed:  
-            compute.disks.createSnapshot  
-            compute.disks.get  
-            compute.disks.list  
-            compute.instances.get  
-            compute.instances.list  
-            compute.regions.list  
-            compute.snapshots.create  
-            compute.snapshots.get  
-            compute.snapshots.list  
-            compute.zoneOperations.get  
-            compute.zones.get  
-            compute.zones.list   
-Private key used for ssh in secret manager
-Service account used for snapshots JSON stored in secret manager
+- Ubuntu 22.04 server for all components, ssh keypair usage required
+- Development Box, Ubuntu 22.04, Ansible 2.17.7, (MySQL 8.0.40 required for Semaphore)
+      #Install pipx AND ansible
+       sudo apt install pipx
+       pipx install --include-deps ansible
+       pipx ensurepath
+  
+- MySql 8 on Devbox
+       apt install mysql-server
+          run, mysql, create user for semaphore and give permission ..ex:
+              CREATE USER 'keith'@'localhost' IDENTIFIED BY 'password';
+              GRANT ALL PRIVILEGES ON *.* TO 'keith'@'localhost';
+  
+- On Devbox also Download semaphore manually  
+        wget https://github.com/semaphoreui/semaphore/releases/download/v2.10.43/semaphore_2.10.43_linux_amd64.tar.gz
+        tar -xvf semaphore_2.10.43_linux_amd64.tar.gz
+        running setup creates the json
+        ./semaphore setup
+        ./semaphore server --config /root/config.json &
+  
 
+
+
+    
 
 To note: keep the "devbox" hosts group in there for the reason of storing private key/svc acct json within.  It is skipped in the code when  
 "(when:  (inventory_hostname != "localhost") )" is in place.  Key is needed for SSH'ing to instances.  Service account json needed for snapshots.  
