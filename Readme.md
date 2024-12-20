@@ -49,11 +49,12 @@ controlplane3: 192.168.122.23
 
 Manual way without Semaphore;
 ###Download this repo and change directory into it.
-
+k8shosts needs to be populated as well as k8svars.yaml.
 
 ###Full run, creates endpoint, installs components to controllers and workers, creates 3 control planes and workers listed in k8shosts file.  Sections can be commented out of of yaml if needing to troubleshoot OR each playbook can be ran seperately outside of k8screate.yaml.  Cat file to see books imported.
     - ansible-playbook k8screate.yaml -i k8shosts
 
+##TO RUN EACH SEPERATELY, EACH OF THESE IS CALLED IN BELOW ORDER WITHIN k8screate.yaml. k8shosts needs to be populated as well as k8svars.yaml.
 ###To create NGINX load balancer for Endpoint
     - ansible-playbook k8s_endpoint.yaml -i k8shosts
 
