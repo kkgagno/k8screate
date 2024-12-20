@@ -27,25 +27,29 @@ Prerequirements:
 
     
 
-To note: keep the "devbox" hosts group in there for the reason of storing private key/svc acct json within.  It is skipped in the code when  
-"(when:  (inventory_hostname != "localhost") )" is in place.  Key is needed for SSH'ing to instances.  Service account json needed for snapshots.  
 
-### How to run:
+###  :
 ```
-###Configure vars.yml
+###Configure k8svars.yml
 
-Example contents below:  (Fill in the project name which contains your secrets, your private key secret name,  
-svc acct json secret name, and svc acct name **should not need to change svc acct json or svc acct name)  
+Example contents below: specify your pod network, LB endpoint, metallb service IP range, and each of the 3 control planes.   
 
-#Project containing secrets
-gcpproject: test-ground
-#secret name for private key used for ssh
-sshcred: sshcred
-#secret name for Service Account JSON
-scjson: gitmanjson
-svcacct: gitman@test-ground.iam.gserviceaccount.com
+#Pod network applied with Cilium
+podnetwork: 10.244.0.0/16
+#K8s Endpoint nginx LB
+nginxlb: 192.168.122.132
+#Metallb service IP range for services
+metallb: 192.168.122.240-192.168.122.250
+#control plane1, this is too populate config file for nginx LB
+controlplane1: 192.168.122.252
+#control plane2, this is too populate config file for nginx LB
+controlplane2: 192.168.122.161
+#control plane3, this is too populate config file for nginx LB
+controlplane3: 192.168.122.23
 
+Manual way without Semaphore;
 ###Download this repo and change directory into it.
+
 
 ###To test connectivity, (this will show OS version as well as last 20 lines of unattended dryrun)
     - ansible-playbook test.yaml -i hosts -l preprodgroup1:devbox
