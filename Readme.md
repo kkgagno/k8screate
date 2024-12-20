@@ -28,7 +28,7 @@ Prerequirements:
     
 
 
-###  :
+###  Deploying Kubernetes Cluster with Ansible
 ```
 ###Configure k8svars.yml
 
@@ -47,7 +47,7 @@ controlplane2: 192.168.122.161
 #control plane3, this is too populate config file for nginx LB
 controlplane3: 192.168.122.23
 
-Manual way without Semaphore;
+Manual way from devbox without Semaphore;
 ###Download this repo and change directory into it.
 k8shosts needs to be populated as well as k8svars.yaml.
 
