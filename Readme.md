@@ -1,5 +1,5 @@
 
-# Linux Patching Playbook (Ubuntu/Debian/RHEL/CentOS/Amazon Linux)
+# Ansible Kubernetes Jarvice deployment
 ```
 Prerequirements:
 - Ubuntu 22.04 server for all components, ssh keypair usage required
