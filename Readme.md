@@ -51,16 +51,41 @@ Manual way without Semaphore;
 ###Download this repo and change directory into it.
 
 
-###To test connectivity, (this will show OS version as well as last 20 lines of unattended dryrun)
-    - ansible-playbook test.yaml -i hosts -l preprodgroup1:devbox
+###Full run, creates endpoint, installs components to controllers and workers, creates 3 control planes and workers listed in k8shosts file.  Sections can be commented out of of yaml if needing to troubleshoot OR each playbook can be ran seperately outside of k8screate.yaml.  Cat file to see books imported.
+    - ansible-playbook k8screate.yaml -i k8shosts
 
-###To create snapshots, run the playbook snapsonly.yaml
-    - ansible-playbook snapsonly.yaml -i hosts -l preprodgroup1:devbox
+###To create NGINX load balancer for Endpoint
+    - ansible-playbook k8s_endpoint.yaml -i k8shosts
 
-###To run the security updates, run the playbook runupdates.yaml
-    - ansible-playbook runupdates.yaml -i hosts -l preprodgroup1:devbox
+###To install requirements onto main controller
+    - ansible-playbook k8s_ctrl_reqs.yaml -i k8shosts
 
-###To add additional groups, edit the hosts file in your local repo and add.  Use preprodgroup1 as an example.
+###To install requirements onto other 2 controllers
+    - ansible-playbook k8s_addl_ctrl_reqs.yaml -i k8shosts
+
+###To install requirements onto worker nodes
+    - ansible-playbook k8s_wrkr_reqs.yaml -i k8shosts
+
+###To install requirements onto worker nodes
+    - ansible-playbook k8s_wrkr_reqs.yaml -i k8shosts
+
+###To initiate first controller and get info for additonal controllers and worker join info
+    - ansible-playbook k8s_controller.yaml -i k8shosts
+
+###To Add second and third control planes
+    - ansible-playbook k8s_addl_controllers.yaml -i k8shosts
+
+###To Add worker nodes to cluster
+    - ansible-playbook k8s_workers.yaml -i k8shosts
+
+###To Add CIS lockdown settings to Ubuntu 22
+    - ansible-playbook ./UBUNTU22-CIS/site.yml -i k8shosts
+
+###To install metallb into cluster
+    - ansible-playbook k8s_metallb.yaml -i k8shosts
+
+
+
 ```
 
 The playbook does reboot hosts by default.  
