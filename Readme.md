@@ -1,4 +1,6 @@
+
 # Linux Patching Playbook (Ubuntu/Debian/RHEL/CentOS/Amazon Linux)
+```
 Prerequirements:
 - Ubuntu 22.04 server for all components, ssh keypair usage required
 - Development Box, Ubuntu 22.04, Ansible 2.17.7, (MySQL 8.0.40 required for Semaphore)
@@ -20,7 +22,7 @@ Prerequirements:
         ./semaphore setup
         ./semaphore server --config /root/config.json &
   
-
+```
 
 
     
