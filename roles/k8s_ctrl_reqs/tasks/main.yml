@@ -133,15 +133,17 @@
   become: yes
   shell: "{{ item }}"
   with_items:
-          - "sudo swapoff -a"
-          - "sudo sed -i '/ swap / s/^\\(.*\\)$/#\\1/g' /etc/fstab"
+          - "swapoff -a"
+          - "sed -e '/swap/ s/^#*/#/' -i /etc/fstab"
+          - "systemctl mask swap.target"
+          - "sed -i '/ swap / s/^\\(.*\\)$/#\\1/g' /etc/fstab"
           - "printf '%s\\n' 'overlay' 'br_netfilter' >/etc/modules-load.d/containerd.conf"
-          - "sudo modprobe overlay"
-          - "sudo modprobe br_netfilter"
+          - "modprobe overlay"
+          - "modprobe br_netfilter"
           - "printf '%s\\n' 'net.bridge.bridge-nf-call-ip6tables = 1' 'net.bridge.bridge-nf-call-iptables = 1' 'net.ipv4.ip_forward = 1' >/etc/sysctl.d/kubernetes.conf"
-          - "sudo sysctl --system"
+          - "sysctl --system"
           - "printf '%s\\n' 'KUBELET_EXTRA_ARGS=\"--cgroup-driver=cgroupfs\"'  >/etc/default/kubelet"
-          - "sudo systemctl daemon-reload && sudo systemctl restart kubelet"
+          - "systemctl daemon-reload && sudo systemctl restart kubelet"
 
   register: key
   #- debug:
