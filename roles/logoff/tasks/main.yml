@@ -11,7 +11,7 @@
   #      - "{{ shell_result.stdout }}"
 
   - name: Remove SSH keypair
-    become: no
+    become: false
     openssh_keypair:
       path: oslogin
       state: absent
@@ -20,7 +20,7 @@
     check_mode: no
 
   - name: Remove SC json
-    become: no
+    become: false
     openssh_keypair:
       path: sc.json
       state: absent

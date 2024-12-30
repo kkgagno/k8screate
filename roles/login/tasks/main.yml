@@ -1,13 +1,13 @@
 ---
 - name: Import vars
-  run_once: yes
+  run_once: true
   include_vars:
     file: vars.yml
     name: vardata
 
 
 - name: Remove SSH keypair
-  become: no
+  become: false
   openssh_keypair:
     path: oslogin
     state: absent
@@ -16,7 +16,7 @@
   check_mode: no
 
 - name: Remove SC json
-  become: no
+  become: false
   openssh_keypair:
     path: sc.json
     state: absent
@@ -35,7 +35,7 @@
       project="{{ project_result.stdout }}"
 
 - name: get private key  
-  become: no
+  become: false
 #  tags:
 #    - login        
   shell: "gcloud secrets versions access latest --project={{ vardata.gcpproject }} --secret={{ vardata.sshcred }} > oslogin"
@@ -47,7 +47,7 @@
        - "{{ create.stdout }}"
 
 - name: get sc json key  
-  become: no
+  become: false
 #  tags:
 #    - login        
   shell: "gcloud secrets versions access latest --project={{ vardata.gcpproject }} --secret={{ vardata.scjson }} > sc.json"

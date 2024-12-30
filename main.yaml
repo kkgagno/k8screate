@@ -16,6 +16,6 @@
     vars:
       reboot_ok: true
 
-#ansible_hostname != "testicle"
+
 # How to run
 # ansible-playbook -b -u <user> --private-key <path to key> -i hosts -l <host-group> main.yml [--extra-vars reboot_ok=true]
