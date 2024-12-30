@@ -7,11 +7,11 @@
 #                                  ( ansible_distribution == "CentOS" ) or
 #                                  ( ansible_distribution == "Amazon" ) or
 #                                  ( ansible_distribution == "RedHat" ) }
-      - { role: apt_update, when: ( inventory_hostname != "localhost") and ( ansible_distribution == "Ubuntu" ) or
+      - { role: k8s_apt_update, when: ( inventory_hostname != "localhost") and ( ansible_distribution == "Ubuntu" ) or
                                   ( ansible_distribution == "Debian" ) }
-      - { role: yum_update, when: ( inventory_hostname != "localhost") and ( ansible_distribution == "CentOS" ) or
-                                  ( ansible_distribution == "Amazon" ) or
-                                  ( ansible_distribution == "RedHat" ) }
+#      - { role: yum_update, when: ( inventory_hostname != "localhost") and ( ansible_distribution == "CentOS" ) or
+#                                  ( ansible_distribution == "Amazon" ) or
+#                                  ( ansible_distribution == "RedHat" ) }
       #- { role: logoff, when: ( 'localhost' in inventory_hostname ) }
     vars:
       reboot_ok: true
