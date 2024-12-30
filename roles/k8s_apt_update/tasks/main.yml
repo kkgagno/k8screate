@@ -1,0 +1,53 @@
+---
+- name: show PRE OS version 
+  shell: "uname -a"
+  register: shell_result
+- debug:
+    msg: 
+      - "{{ shell_result.stdout }}"
+
+- name: Unattended upgrade
+  become: true
+  shell: "unattended-upgrade -d"
+  register: upgrade_result
+#- debug:
+#    msg:
+#      - "{{ upgrade_result }}"
+  
+    
+
+#- name: Run "apt-get update"
+#  apt:
+#    update_cache: yes
+
+#- name: Run "apt-get dist-upgrade"
+#  apt:
+#    upgrade: dist
+
+- name: Check if reboot is required.
+  stat:
+    path: /var/run/reboot-required
+  register: reboot_required
+
+- debug:
+    msg: "Reboot is required!!!"
+  when: reboot_required.stat.exists
+
+- name: Reboot host(s).
+  include_role:
+    name: reboot_host
+  when: reboot_required.stat.exists and reboot_ok
+
+- name: show POST OS version 
+  shell: "uname -a"
+  register: shell_result
+- debug:
+    msg: 
+      - "{{ shell_result.stdout }}"
+
+
+#- name: Run "apt-get autoremove"
+#  apt:
+#    autoremove: yes
+
+

@@ -1,0 +1,24 @@
+---
+  - hosts: all
+    gather_facts: yes
+    become: yes
+    roles:
+      #- { role: login, when: ( 'localhost' in inventory_hostname ) }
+      - { role: k8s_apt_update_check, when: (inventory_hostname != "localhost") and ( ansible_distribution == "Ubuntu" ) or
+                                  ( ansible_distribution == "Debian" ) }
+      #- { role: yum_update_check, when: (inventory_hostname != "localhost") and ( ansible_distribution == "CentOS" ) or
+      #                            ( ansible_distribution == "Amazon" ) or
+      #                            ( ansible_distribution == "RedHat" ) }
+      - { role: k8s_ubuntu_reboot_check, when: (inventory_hostname != "localhost") and ( ansible_distribution == "Ubuntu" ) or
+                                  ( ansible_distribution == "Debian" ) }
+      #- { role: centos_reboot_check, when: (inventory_hostname != "localhost") and ( ansible_distribution == "CentOS" ) or
+      #                            ( ansible_distribution == "Amazon" ) or
+      #                            ( ansible_distribution == "RedHat" ) } 
+      #- { role: logoff, when: ( 'localhost' in inventory_hostname ) }
+
+                                                                 
+    #vars:
+    #  reboot_ok: true
+
+# How to run
+# ansible-playbook -b -u <user> --private-key <path to key> -i hosts -l <host-group> main.yml [--extra-vars reboot_ok=true]

@@ -1,0 +1,16 @@
+---
+- name: show OS version
+  shell: "uname -a"
+  register: shell_result
+- debug:
+    msg:
+      - "{{ shell_result.stdout }}"
+
+- name: Unattended upgrade dry run
+  become: true
+  shell: "unattended-upgrade --dry-run -d"
+  register: upgrade_result
+- debug:
+    msg:
+      - "{{ upgrade_result.stdout_lines[-20:] }}"
+

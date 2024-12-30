@@ -1,0 +1,7 @@
+---
+- name: show OS version 
+  shell: "uname -a"
+  register: shell_result
+- debug:
+    msg: 
+      - "{{ shell_result.stdout }}"

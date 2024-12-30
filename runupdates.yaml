@@ -1,0 +1,4 @@
+---
+- import_playbook: login.yaml
+- import_playbook: main.yaml
+- import_playbook: logoff.yaml
