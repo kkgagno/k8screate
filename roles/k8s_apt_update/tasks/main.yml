@@ -11,7 +11,7 @@
   become: true
   shell: "{{ item }}"
   with_items: 
-    - "kubectl drain {{ ansible_host }} --ignore-daemonsets --delete-local-data" 
+    - "kubectl drain {{ inventory_hostname }} --ignore-daemonsets" 
 
 - name: Unattended upgrade
   become: true
