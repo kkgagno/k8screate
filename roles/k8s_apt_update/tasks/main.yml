@@ -6,6 +6,13 @@
     msg: 
       - "{{ shell_result.stdout }}"
 
+
+- name: Drain nodes
+  become: true
+  shell: "{{ item }}"
+  with_items: 
+    - "kubectl drain {{ ansible_host }} --ignore-daemonsets --delete-local-data" 
+
 - name: Unattended upgrade
   become: true
   shell: "unattended-upgrade -d"
@@ -37,6 +44,12 @@
   include_role:
     name: reboot_host
   when: reboot_required.stat.exists and reboot_ok
+
+- name: Drain nodes
+  become: true
+  shell: "{{ item }}"
+  with_items: 
+    - "kubectl uncordon {{ ansible_host }}" 
 
 - name: show POST OS version 
   shell: "uname -a"

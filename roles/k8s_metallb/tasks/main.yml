@@ -1,26 +1,26 @@
 - name: Check if metallb is running
   shell: "kubectl get namespace |grep metallb-system"
   register: running_process
-  ignore_errors: yes
+  ignore_errors: true
   #failed_when: running_process.rc < 1
 - debug:
     msg: "Metallb is running"
   when: running_process.stdout_lines|length > 0
-  ignore_errors: yes
+  ignore_errors: true
 - meta: end_host
   when: running_process.stdout_lines|length > 0
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: Restart kubedns and wait, cis settings crash dns pods
-  become: yes
+  become: true
   shell: "{{ item }}"
   with_items: 
     - "kubectl rollout restart deployment coredns -n kube-system"
     - "kubectl wait --for=condition=Ready pods --all -n kube-system --timeout 480s"   
-  ignore_errors: yes
+  ignore_errors: true
   
 - name: Install Metallb
-  become: no
+  become: false
   shell: "kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.8/config/manifests/metallb-native.yaml"
 
 - name: Create metallb.yaml on host
@@ -58,7 +58,7 @@
 
 
 - name: Install Metallb config yaml
-  become: yes
+  become: true
   shell: "{{ item }}"
   with_items: 
     - "kubectl wait --for=condition=Ready pods --all -n metallb-system --timeout 480s"
