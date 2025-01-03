@@ -11,7 +11,7 @@
   become: true
   shell: "{{ item }}"
   with_items: 
-    - "kubectl drain {{ inventory_hostname }} --ignore-daemonsets" 
+    - "kubectl drain {{ inventory_hostname }} --ignore-daemonsets --delete-emptydir-data" 
 
 - name: Unattended upgrade
   become: true
@@ -49,7 +49,7 @@
   become: true
   shell: "{{ item }}"
   with_items: 
-    - "kubectl uncordon {{ inventory_hostnamet }}" 
+    - "kubectl uncordon {{ inventory_hostname }}" 
 
 - name: show POST OS version 
   shell: "uname -a"
