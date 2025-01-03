@@ -49,7 +49,7 @@
   become: true
   shell: "{{ item }}"
   with_items: 
-    - "kubectl uncordon {{ ansible_host }}" 
+    - "kubectl uncordon {{ inventory_hostnamet }}" 
 
 - name: show POST OS version 
   shell: "uname -a"
