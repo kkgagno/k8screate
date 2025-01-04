@@ -7,11 +7,11 @@
       - "{{ shell_result.stdout }}"
 
 
-- name: Drain nodes
-  become: true
-  shell: "{{ item }}"
-  with_items: 
-    - "kubectl drain {{ inventory_hostname }} --ignore-daemonsets --delete-emptydir-data" 
+#- name: Drain nodes
+#  become: true
+#  shell: "{{ item }}"
+#  with_items: 
+#    - "kubectl drain {{ inventory_hostname }} --ignore-daemonsets --delete-emptydir-data" 
 
 - name: Unattended upgrade
   become: true
@@ -40,23 +40,23 @@
     msg: "Reboot is required!!!"
   when: reboot_required.stat.exists
 
-- name: Reboot host(s).
-  include_role:
-    name: reboot_host
-  when: reboot_required.stat.exists and reboot_ok
+#- name: Reboot host(s).
+#  include_role:
+#    name: reboot_host
+#  when: reboot_required.stat.exists and reboot_ok
 
-- name: Drain nodes
-  become: true
-  shell: "{{ item }}"
-  with_items: 
-    - "kubectl uncordon {{ inventory_hostname }}" 
+#- name: Drain nodes
+#  become: true
+#  shell: "{{ item }}"
+#  with_items: 
+#    - "kubectl uncordon {{ inventory_hostname }}" 
 
-- name: show POST OS version 
-  shell: "uname -a"
-  register: shell_result
-- debug:
-    msg: 
-      - "{{ shell_result.stdout }}"
+#- name: show POST OS version 
+#  shell: "uname -a"
+#  register: shell_result
+#- debug:
+#    msg: 
+#      - "{{ shell_result.stdout }}"
 
 
 #- name: Run "apt-get autoremove"
