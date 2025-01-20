@@ -1,18 +1,18 @@
 - name: Check if kubeapi is running
   shell: "pgrep kube-apiserver"
   register: running_process
-  ignore_errors: yes
+  ignore_errors: true
   #failed_when: running_process.rc < 1
 - debug:
     msg: "Kube API is running"
   when: running_process.stdout_lines|length > 0
-  ignore_errors: yes
+  ignore_errors: true
 - meta: end_host
   when: running_process.stdout_lines|length > 0
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: time synch...for when restoring from snap
-  become: yes
+  become: true
   shell: "{{ item }}"
   with_items:    
     - "date -s \"$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z\""
@@ -30,10 +30,10 @@
 
 
 - name: Add to cluster
-  become: yes
+  become: true
   command: "{{ command_output.stdout }}"
   register: join_result
-  ignore_errors: yes
+  ignore_errors: true
 - set_fact:     
    joinresult = "{{ join_result.stdout }}"
 - debug:
@@ -44,7 +44,7 @@
 
 
 - name: Set up kubectl for the current user
-  become: no
+  become: false
   command: "{{ item }}"
   with_items:
       - "sudo mkdir -p $HOME/.kube"
@@ -55,7 +55,7 @@
 
 
 - name: read kubecfg into var
-  become: no
+  become: false
   shell: "cat $HOME/.kube/config"
   register: kubecfg
 - debug:
@@ -64,14 +64,14 @@
 
 
 - name: Set up kubectl for the root user
-  become: yes
+  become: true
   command: "{{ item }}"
   with_items:
       - "sudo mkdir -p $HOME/.kube"
       - "sudo chown -R $USER $HOME/.kube"
 
 - name: add master kubeconfig local root
-  become: yes
+  become: true
   copy:
     content: "{{ kubecfg.stdout }}"
     dest: "$HOME/.kube/config"

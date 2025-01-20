@@ -1,5 +1,5 @@
 - name: Import vars
-  run_once: yes
+  run_once: true
   include_vars:
     file: k8svars.yml
     name: vardata
@@ -8,18 +8,18 @@
 - name: Check if nginx is running
   shell: "ps cax |grep nginx"
   register: running_process
-  ignore_errors: yes
+  ignore_errors: true
   #failed_when: running_process.rc < 1
 - debug:
     msg: "NGINX is running"
   when: running_process.stdout_lines|length > 0
-  ignore_errors: yes
+  ignore_errors: true
 - meta: end_host
   when: running_process.stdout_lines|length > 0
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: time synch...for when restoring from snap
-  become: yes
+  become: true
   shell: "{{ item }}"
   with_items:    
     - "date -s \"$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z\""
@@ -80,7 +80,7 @@
   #when: running_process.stdout_lines|length = 0  
 
 - name: Restart nginx with new config file
-  become: yes
+  become: true
   shell: "{{ item }}"
   with_items:    
     - "service nginx restart"
