@@ -4,18 +4,18 @@
     file: k8svars.yml
     name: vardata
 
-- name: Check if kubeapi is running
-  shell: "pgrep kube-apiserver"
-  register: running_process
-  ignore_errors: true
-  #failed_when: running_process.rc < 1
-- debug:
-    msg: "Kube API is running"
-  when: running_process.stdout_lines|length > 0
-  ignore_errors: true
-- meta: end_host
-  when: running_process.stdout_lines|length > 0
-  ignore_errors: true
+#- name: Check if kubeapi is running
+#  shell: "pgrep kube-apiserver"
+#  register: running_process
+#  ignore_errors: true
+#  #failed_when: running_process.rc < 1
+#- debug:
+#    msg: "Kube API is running"
+#  when: running_process.stdout_lines|length > 0
+#  ignore_errors: true
+#- meta: end_host
+#  when: running_process.stdout_lines|length > 0
+#  ignore_errors: true
 
 - name: Initialize Kubernetes master
   command: kubeadm init --control-plane-endpoint={{ vardata.nginxlb }} --upload-certs  #--pod-network-cidr={{ vardata.podnetwork }} 
@@ -95,7 +95,7 @@
   file:
       path: "/etc/values.yaml"
       state: touch
-      remote_src: yes
+      
 
 - name: values.yaml create for kured schedule
   blockinfile:
@@ -112,7 +112,7 @@
   with_items:
       - "helm repo add kubereboot https://kubereboot.github.io/charts"
       - "helm repo update"
-      - "helm install my-release kubereboot/kured --namespace kube-system -f values.yaml"
+      - "helm install my-release kubereboot/kured --namespace kube-system -f /etc/values.yaml"
 
 - name: Add prometheus/grafana repo, create  namespace, and install
   become: true  
