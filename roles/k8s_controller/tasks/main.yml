@@ -95,6 +95,7 @@
   file:
       path: "/etc/values.yaml"
       state: touch
+      remote_src: yes
 
 - name: values.yaml create for kured schedule
   blockinfile:
@@ -114,7 +115,7 @@
       - "helm install my-release kubereboot/kured --namespace kube-system -f values.yaml"
 
 - name: Add prometheus/grafana repo, create  namespace, and install
-  become: true
+  become: true  
   command: "{{ item }}"
   with_items:
       - "helm repo add prometheus-community https://prometheus-community.github.io/helm-charts"
