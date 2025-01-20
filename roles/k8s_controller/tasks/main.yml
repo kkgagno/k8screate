@@ -91,39 +91,6 @@
       - "kubectl create ns traefik-v2"
       - "helm install -n traefik-v2 traefik traefik/traefik"
 
-- name: Create values.yaml for kured
-  file:
-      path: "/etc/values.yaml"
-      state: touch
-      
-
-- name: values.yaml create for kured schedule
-  blockinfile:
-    path: "/etc/values.yaml"  
-    state: present
-    block: |
-      window_start: “22:00”
-      window_end: “06:00”
-      reboot_days: “mon,tue,wed,thu,fri”
-
-- name: Add kured repo, create  namespace, and install
-  become: true
-  command: "{{ item }}"
-  with_items:
-      - "helm repo add kubereboot https://kubereboot.github.io/charts"
-      - "helm repo update"
-      - "helm install my-release kubereboot/kured --namespace kube-system -f /etc/values.yaml"
-
-- name: Add prometheus/grafana repo, create  namespace, and install
-  become: true  
-  command: "{{ item }}"
-  with_items:
-      - "helm repo add prometheus-community https://prometheus-community.github.io/helm-charts"
-      - "helm repo update"
-      - "kubectl create ns prometheus-stack"
-      - "helm install -n prometheus-stack prometheus prometheus-community/kube-prometheus-stack"
-
-
 
 #- name: Install Calico network plugin
 #  become: no

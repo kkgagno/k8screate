@@ -64,3 +64,37 @@
     - "kubectl wait --for=condition=Ready pods --all -n metallb-system --timeout 480s"
     - "kubectl apply -f metallb.yaml"
 
+
+- name: Create values.yaml for kured
+  file:
+      path: "/etc/values.yaml"
+      state: touch
+      
+
+- name: values.yaml add data to file
+  blockinfile:
+    path: "/etc/values.yaml"  
+    state: present
+    block: |
+      window_start: “22:00”
+      window_end: “06:00”
+      reboot_days: “mon,tue,wed,thu,fri”
+
+- name: Add kured repo, create  namespace, and install
+  become: true
+  command: "{{ item }}"
+  with_items:
+      - "helm repo add kubereboot https://kubereboot.github.io/charts"
+      - "helm repo update"
+      - "helm install my-release kubereboot/kured --namespace kube-system -f /etc/values.yaml"
+
+- name: Add prometheus/grafana repo, create  namespace, and install
+  become: true  
+  command: "{{ item }}"
+  with_items:
+      - "helm repo add prometheus-community https://prometheus-community.github.io/helm-charts"
+      - "helm repo update"
+      - "kubectl create ns prometheus-stack"
+      - "helm install -n prometheus-stack prometheus prometheus-community/kube-prometheus-stack"
+
+
