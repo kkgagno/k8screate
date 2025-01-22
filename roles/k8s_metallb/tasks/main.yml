@@ -96,5 +96,6 @@
       - "helm repo update"
       - "kubectl create ns prometheus-stack"
       - "helm install -n prometheus-stack prometheus prometheus-community/kube-prometheus-stack"
+      - "kubectl patch svc prometheus-grafana -n prometheus-stack -p '[{\"op\":\"replace\",\"path\":\"/spec/type\",\"value\":\"LoadBalancer\"}]' --type='json'"
 
 
