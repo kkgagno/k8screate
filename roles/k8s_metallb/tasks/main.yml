@@ -86,7 +86,7 @@
   with_items:
       - "helm repo add kubereboot https://kubereboot.github.io/charts"
       - "helm repo update"
-      - "helm install my-release kubereboot/kured --namespace kube-system -f /etc/values.yaml"
+      - "helm install kured kubereboot/kured --namespace kube-system -f /etc/values.yaml"
 
 - name: Add prometheus/grafana repo, create  namespace, and install
   become: true  
