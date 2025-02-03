@@ -88,14 +88,14 @@
       - "helm repo update"
       - "helm install kured kubereboot/kured --namespace kube-system -f /etc/values.yaml"
 
-#- name: Add prometheus/grafana repo, create  namespace, and install
-#  become: true  
-# command: "{{ item }}"
-#  with_items:
-#      - "helm repo add prometheus-community https://prometheus-community.github.io/helm-charts"
-#      - "helm repo update"
-#      - "kubectl create ns prometheus-stack"
-#      - "helm install -n prometheus-stack prometheus prometheus-community/kube-prometheus-stack"
-#      - "kubectl patch svc prometheus-grafana -n prometheus-stack -p '[{\"op\":\"replace\",\"path\":\"/spec/type\",\"value\":\"LoadBalancer\"}]' --type='json'"
+- name: Add prometheus/grafana repo, create  namespace, and install
+  become: true  
+  command: "{{ item }}"
+  with_items:
+      - "helm repo add prometheus-community https://prometheus-community.github.io/helm-charts"
+      - "helm repo update"
+      - "kubectl create ns prometheus-stack"
+      - "helm install -n prometheus-stack prometheus prometheus-community/kube-prometheus-stack"
+      - "kubectl patch svc prometheus-grafana -n prometheus-stack -p '[{\"op\":\"replace\",\"path\":\"/spec/type\",\"value\":\"LoadBalancer\"}]' --type='json'"
 
 
