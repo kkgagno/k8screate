@@ -111,8 +111,8 @@
     block: |
       loki:
         enabled: true
-          image:
-            tag: '2.9.11'
+        image:
+          tag: '2.9.11'
 
       promtail:
          enabled: true
