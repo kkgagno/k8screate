@@ -123,10 +123,6 @@
       grafana:
         enabled: false
 
-      prometheus:
-        enabled: false
-
-
 
 - name: Add Loki to prometheus stack
   become: true
