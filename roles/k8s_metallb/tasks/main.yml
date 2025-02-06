@@ -98,4 +98,41 @@
       - "helm install -n prometheus-stack prometheus prometheus-community/kube-prometheus-stack"
       - "kubectl patch svc prometheus-grafana -n prometheus-stack -p '[{\"op\":\"replace\",\"path\":\"/spec/type\",\"value\":\"LoadBalancer\"}]' --type='json'"
 
+- name: Create lokivalues.yaml for loki
+  file:
+      path: "/etc/lokivalues.yaml"
+      state: touch
+      
 
+- name: lokivalues.yaml add data to file
+  blockinfile:
+    path: "/etc/lokivalues.yaml"  
+    state: present
+    block: |
+      loki:
+        enabled: true
+          image:
+            tag: '2.9.11'
+
+      promtail:
+         enabled: true
+
+      fluent-bit:
+        enabled: false
+
+      grafana:
+        enabled: false
+
+      prometheus:
+        enabled: false
+
+
+
+- name: Add Loki to prometheus stack
+  become: true
+  command: "{{ item }}"
+  with_items:
+      - "helm repo add grafana https://grafana.github.io/helm-charts"
+      - "helm repo update"
+      - "helm upgrade --install loki grafana/loki-stack --values /etc/lokivalues.yaml -n prometheus-stack"
+      
