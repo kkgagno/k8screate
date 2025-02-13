@@ -102,7 +102,10 @@ Prometheus - monitoring system, collects and stores metrics.
 
 Grafana - Graphing interface  to display dashboards / metrics.  Uses prometheus and loki as plugins for graphs as well as logs.
 
-Loki - Efficient logging solution that intergrates with Grafana.  
+Loki - Efficient logging solution that intergrates with Grafana. 
+
+NGINX - Load balancer software, in this case NGINX is used for the loadbalancer / endpoint for Kubernetes control planes.
+
 
 ---
 
