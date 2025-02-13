@@ -92,7 +92,7 @@ PRODUCT EXPLANATIONS:
 
 Cilium - CNI (Container Network Interface). Intergrates smoothly with kubelet to enable the use of an overlay or underlay network to automatically configure the network between pods.
 
-Metallb - Load balancer software to serve service IPs Allows users to create "LoadBalancer" types.
+Metallb - Load balancer software to serve service IPs. Allows users to create "LoadBalancer" types.
 
 Traefik - Reverse proxy and load balancer.  Intelligently directs incoming requestss to the appropriate backend service.
 
