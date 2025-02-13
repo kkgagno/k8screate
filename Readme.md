@@ -88,6 +88,7 @@ k8shosts needs to be populated as well as k8svars.yaml.
 
 
 ```
+PRODUCT EXPLANATIONS:
 
 Cilium - CNI (Container Network Interface). Intergrates smoothly with kubelet to enable the use of an overlay or underlay network to automatically configure the network between pods.
 
@@ -102,6 +103,7 @@ Prometheus - monitoring system, collects and stores metrics.
 Grafana - Graphing interface  to display dashboards / metrics.  Uses prometheus and loki as plugins for graphs as well as logs.
 
 Loki - Efficient logging solution that intergrates with Grafana.  
+
 ---
 
  
