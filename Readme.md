@@ -89,8 +89,19 @@ k8shosts needs to be populated as well as k8svars.yaml.
 
 ```
 
+Cilium - CNI (Container Network Interface). Intergrates smoothly with kubelet to enable the use of an overlay or underlay network to automatically configure the network between pods.
 
+Metallb - Load balancer software to serve service IPs Allows users to create "LoadBalancer" types.
 
+Traefik - Reverse proxy and load balancer.  Intelligently directs incoming requestss to the appropriate backend service.
+
+Kured - Used for intelligent kubernetes aware reboots of the host servers (Ubuntu patched and waiting for reboot)
+
+Prometheus - monitoring system, collects and stores metrics.
+
+Grafana - Graphing interface  to display dashboards / metrics.  Uses prometheus and loki as plugins for graphs as well as logs.
+
+Loki - Efficient logging solution that intergrates with Grafana.  
 ---
 
  
