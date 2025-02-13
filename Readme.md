@@ -106,6 +106,7 @@ Loki - Efficient logging solution that intergrates with Grafana.
 
 NGINX - Load balancer software, in this case NGINX is used for the loadbalancer / endpoint for Kubernetes control planes.
 
+Semaphore - Interface setup on devbox for Ansible Runs. Using along with github repos using keys.
 
 ---
 
