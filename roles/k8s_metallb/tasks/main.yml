@@ -124,11 +124,11 @@
         enabled: false
 
 
-- name: Add Loki to prometheus stack
-  become: true
-  command: "{{ item }}"
-  with_items:
-      - "helm repo add grafana https://grafana.github.io/helm-charts"
-      - "helm repo update"
-      - "helm upgrade --install loki grafana/loki-stack --values /etc/lokivalues.yaml -n prometheus-stack"
+#- name: Add Loki to prometheus stack
+#  become: true
+#  command: "{{ item }}"
+#  with_items:
+#      - "helm repo add grafana https://grafana.github.io/helm-charts"
+#      - "helm repo update"
+#      - "helm upgrade --install loki grafana/loki-stack --values /etc/lokivalues.yaml -n prometheus-stack"
       
