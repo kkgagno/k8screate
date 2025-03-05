@@ -88,51 +88,51 @@
       - "helm repo update"
       - "helm install kured kubereboot/kured --namespace kube-system -f /etc/values.yaml"
 
-- name: Add prometheus/grafana repo, create  namespace, and install
-  become: true  
-  command: "{{ item }}"
-  with_items:
-      - "helm repo add prometheus-community https://prometheus-community.github.io/helm-charts"
-      - "helm repo update"
-      - "kubectl create ns prometheus-stack"
-      - "helm install -n prometheus-stack prometheus prometheus-community/kube-prometheus-stack"
-      - "kubectl patch svc prometheus-grafana -n prometheus-stack -p '[{\"op\":\"replace\",\"path\":\"/spec/type\",\"value\":\"LoadBalancer\"}]' --type='json'"
+#- name: Add prometheus/grafana repo, create  namespace, and install
+#  become: true  
+#  command: "{{ item }}"
+#  with_items:
+#      - "helm repo add prometheus-community https://prometheus-community.github.io/helm-charts"
+#      - "helm repo update"
+#      - "kubectl create ns prometheus-stack"
+#      - "helm install -n prometheus-stack prometheus prometheus-community/kube-prometheus-stack"
+#      - "kubectl patch svc prometheus-grafana -n prometheus-stack -p '[{\"op\":\"replace\",\"path\":\"/spec/type\",\"value\":\"LoadBalancer\"}]' --type='json'"
 
-- name: Create lokivalues.yaml for loki
-  file:
-      path: "/etc/lokivalues.yaml"
-      state: touch
+#- name: Create lokivalues.yaml for loki
+#  file:
+#      path: "/etc/lokivalues.yaml"
+#      state: touch
       
 
-- name: lokivalues.yaml add data to file
-  blockinfile:
-    path: "/etc/lokivalues.yaml"  
-    state: present
-    block: |
-      loki:
-        enabled: true
-        image:
-          tag: '2.9.11'
+#- name: lokivalues.yaml add data to file
+#  blockinfile:
+#    path: "/etc/lokivalues.yaml"  
+#    state: present
+#    block: |
+#      loki:
+#        enabled: true
+#        image:
+#          tag: '2.9.11'
 
-      promtail:
-         enabled: true
+#      promtail:
+#         enabled: true
 
-      fluent-bit:
-        enabled: false
+#      fluent-bit:
+#        enabled: false
 
-      grafana:
-        enabled: false
+#      grafana:
+#        enabled: false
 
-      prometheus:
-        enabled: false
+#      prometheus:
+#        enabled: false
      
 
 
-- name: Add Loki to prometheus stack
-  become: true
-  command: "{{ item }}"
-  with_items:
-      - "helm repo add grafana https://grafana.github.io/helm-charts"
-      - "helm repo update"
-      - "helm upgrade --install loki grafana/loki-stack --values /etc/lokivalues.yaml -n prometheus-stack"
+#- name: Add Loki to prometheus stack
+#  become: true
+#  command: "{{ item }}"
+#  with_items:
+#      - "helm repo add grafana https://grafana.github.io/helm-charts"
+#      - "helm repo update"
+#      - "helm upgrade --install loki grafana/loki-stack --values /etc/lokivalues.yaml -n prometheus-stack"
       
