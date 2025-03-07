@@ -136,6 +136,7 @@
           - "swapoff -a"
           - "sed -e '/swap/ s/^#*/#/' -i /etc/fstab"
           - "systemctl mask swap.target"
+          - "sysctl -w net.ipv6.conf.all.disable_ipv6=1"
           - "sed -i '/ swap / s/^\\(.*\\)$/#\\1/g' /etc/fstab"
           - "printf '%s\\n' 'overlay' 'br_netfilter' >/etc/modules-load.d/containerd.conf"
           - "modprobe overlay"
