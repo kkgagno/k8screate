@@ -52,7 +52,7 @@
     state: absent
 
 - name: install cilium
-  shell: "cilium install --set ipam.operator.clusterPoolIPv4PodCIDRList={{ vardata.podnetwork }}"
+  shell: "cilium install --set ipam.operator.clusterPoolIPv4PodCIDRList={{ vardata.podnetwork }} --set ipv6.enabled=false"
   register: cilium
 - debug:
      msg:
