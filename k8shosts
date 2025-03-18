@@ -5,16 +5,16 @@ localhost ansible_connection=local
 nginx ansible_host=192.168.122.132
 
 [master]
-mstr1 ansible_host=192.168.122.252
+mstr1 ansible_host=192.168.122.159
 
 [addl_controllers]
-mstr2 ansible_host=192.168.122.161
-mstr3 ansible_host=192.168.122.23
+mstr2 ansible_host=192.168.122.196
+mstr3 ansible_host=192.168.122.2
 
 [workers]
-wrkr1 ansible_host=192.168.122.250
-wrkr2 ansible_host=192.168.122.10
-wrkr3 ansible_host=192.168.122.228
+wrkr1 ansible_host=192.168.122.247
+wrkr2 ansible_host=192.168.122.112
+wrkr3 ansible_host=192.168.122.67
 
 
 
