@@ -370,7 +370,7 @@ ubtu24cis_rule_5_1_22: true
 ubtu24cis_rule_5_2_1: true
 ubtu24cis_rule_5_2_2: true
 ubtu24cis_rule_5_2_3: true
-ubtu24cis_rule_5_2_4: true
+ubtu24cis_rule_5_2_4: false
 ubtu24cis_rule_5_2_5: true
 ubtu24cis_rule_5_2_6: true
 ubtu24cis_rule_5_2_7: true
