@@ -363,7 +363,7 @@ ubtu24cis_rule_5_1_16: true
 ubtu24cis_rule_5_1_17: true
 ubtu24cis_rule_5_1_18: true
 ubtu24cis_rule_5_1_19: true
-ubtu24cis_rule_5_1_20: true
+ubtu24cis_rule_5_1_20: false
 ubtu24cis_rule_5_1_21: true
 ubtu24cis_rule_5_1_22: true
 # 5.2 Configure privilege escalation
