@@ -1,5 +1,28 @@
 ---
 
+- name: check csi-locked file exists, skip
+  stat: path=/etc/cis-locked
+  register: csi
+
+- name: is it there?
+  debug:
+   msg:
+     - "file is there"
+  when: csi.stat.exists
+  tags:
+    - always
+
+- name: End if file exists
+  fail: msg="This host has already had this playbook run against it"
+  when: csi.stat.exists
+  tags:
+     - always
+  ignore_errors: true
+- meta: end_host
+  when: csi.stat.exists
+  tags:
+    - always
+
 - name: Check OS version and family
   when:
     - ansible_facts.distribution == 'Ubuntu'
@@ -180,3 +203,8 @@
   tags: always
   ansible.builtin.debug:
     msg: "You have {{ warn_count }} Warning(s) that require investigating that are related to the following benchmark ID(s) {{ warn_control_list }}"
+
+- name: Create file to check for checking if CIS applied
+  file:
+      path: "/etc/cis-locked"
+      state: touch
