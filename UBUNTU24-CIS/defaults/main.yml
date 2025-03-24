@@ -309,7 +309,7 @@ ubtu24cis_rule_4_1_1: true
 # 4.2 Configure UncomplicatedFirewall
 ubtu24cis_rule_4_2_1: true
 ubtu24cis_rule_4_2_2: true
-ubtu24cis_rule_4_2_3: true
+ubtu24cis_rule_4_2_3: false
 ubtu24cis_rule_4_2_4: true
 ubtu24cis_rule_4_2_5: true
 ubtu24cis_rule_4_2_6: true
