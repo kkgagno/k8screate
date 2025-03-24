@@ -1,7 +1,6 @@
----
-
-- name: Run CIS benchmark
-  hosts: all
+- hosts: master, workers, endpoint, addl_controllers
   become: true
+
   roles:
-    - role: "{{ playbook_dir }}"
+
+      - role: "{{ playbook_dir }}"
