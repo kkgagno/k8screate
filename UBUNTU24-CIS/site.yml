@@ -1,4 +1,4 @@
-- hosts: master, workers, endpoint, addl_controllers
+- hosts: master, workers, addl_controllers
   become: true
 
   roles:
