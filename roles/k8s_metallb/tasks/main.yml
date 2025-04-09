@@ -179,7 +179,7 @@
       - "helm install -n prometheus-stack prometheus prometheus-community/kube-prometheus-stack -f /etc/promvalues.yaml"
       - "kubectl patch svc prometheus-grafana -n prometheus-stack -p '[{\"op\":\"replace\",\"path\":\"/spec/type\",\"value\":\"LoadBalancer\"}]' --type='json'"
 
-- name: Create loki yaml file
+- name: Create loki persistent volume yaml file
   file:
       path: "/etc/lokipv.yaml"
       state: touch
