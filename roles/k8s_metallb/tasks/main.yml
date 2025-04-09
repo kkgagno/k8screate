@@ -110,7 +110,13 @@
       allowVolumeExpansion: true
       volumeBindingMode: Immediate
 
-- name: Create storage class yaml on host
+- name: Create storage class
+  become: true
+  command: "{{ item }}"
+  with_items:
+      - "kubectl create -f /etc/sc.yaml"
+
+- name: Create prometheus persisten volume yaml on host
   file:
       path: "/etc/prompv.yaml"
       state: touch
