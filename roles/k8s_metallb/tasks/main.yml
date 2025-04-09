@@ -212,7 +212,7 @@
   become: true
   command: "{{ item }}"
   with_items:
-      - "kubectl create -f /etc/loki.yaml"
+      - "kubectl create -f /etc/lokipv.yaml"
 
 - name: Create lokivalues.yaml for loki
   file:
