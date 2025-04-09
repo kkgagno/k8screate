@@ -150,3 +150,33 @@
   #- debug:
   #   msg:
   #     - "{{ key.stdout }}"
+
+- name: Delete banner file before copy
+  file:
+    path: "/etc/issue.net"
+    state: absent
+
+- name: Create new banner file
+  file:
+      path: "/etc/issue.net"
+      state: touch
+      
+- name: fill in banner file
+  blockinfile:
+    path: "/etc/issue.net"  
+    state: present
+    block: |
+      \# -----------------------------------------------------------------------------
+      \# WARNING: Unauthorized Access Prohibited
+      \# -----------------------------------------------------------------------------
+      \# This system is for the exclusive use of authorized users associated with
+      \# NegativeOnesWord. All activities on this system are monitored and recorded.
+      \# By accessing this system, you agree to comply with all applicable laws,
+      \# regulations, and organizational policies.
+      \#
+      \# If you are not an authorized user, disconnect immediately. Unauthorized
+      \# access may result in disciplinary action, legal consequences, or both.
+      \#
+      \# Authorized users must ensure their actions comply with security protocols and
+      \# report any suspicious activity immediately to the system administrator.
+      \# -----------------------------------------------------------------------------
