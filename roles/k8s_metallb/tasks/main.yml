@@ -67,13 +67,13 @@
 
 - name: Create values.yaml for kured
   file:
-      path: "/etc/values.yaml"
+      path: "/etc/kuredvalues.yaml"
       state: touch
       
 
 - name: values.yaml add data to file
   blockinfile:
-    path: "/etc/values.yaml"  
+    path: "/etc/kuredvalues.yaml"  
     state: present
     block: |
       window_start: “22:00”
@@ -86,7 +86,88 @@
   with_items:
       - "helm repo add kubereboot https://kubereboot.github.io/charts"
       - "helm repo update"
-      - "helm install kured kubereboot/kured --namespace kube-system -f /etc/values.yaml"
+      - "helm install kured kubereboot/kured --namespace kube-system -f /etc/kuredvalues.yaml"
+
+- name: Create storage class yaml on host
+  file:
+      path: "/etc/sc.yaml"
+      state: touch
+
+
+- name: storage class yaml add data to file
+  blockinfile:
+    path: "/etc/sc.yaml"  
+    state: present
+    block: |
+      apiVersion: storage.k8s.io/v1
+      kind: StorageClass
+      metadata:
+          name: local-storage
+          annotations:
+             storageclass.kubernetes.io/is-default-class: "true"
+      provisioner: kubernetes.io/no-provisioner
+      reclaimPolicy: Retain
+      allowVolumeExpansion: true
+      volumeBindingMode: Immediate
+
+- name: Create storage class yaml on host
+  file:
+      path: "/etc/prompv.yaml"
+      state: touch
+
+- name: storage class yaml add data to file
+  blockinfile:
+    path: "/etc/prompv.yaml"  
+    state: present
+    block: |	  
+      apiVersion: v1
+      kind: PersistentVolume
+      metadata:
+        finalizers:
+        - kubernetes.io/pv-protection
+        name: prometheus-grafana
+        namespace: prometheus-stack
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        capacity:
+          storage: 10Gi
+        hostPath:
+          path: /mnt
+          type: ""
+        persistentVolumeReclaimPolicy: Retain
+        storageClassName: local-storage
+        volumeMode: Filesystem
+
+- name: Create persistent volume for Prometheus-Grafana
+  become: true
+  command: "{{ item }}"
+  with_items:
+      - "kubectl create -f /etc/prompv.yaml"
+
+
+- name: Create prometheus yaml on host
+  file:
+      path: "/etc/promvalues.yaml"
+      state: touch
+
+
+- name: promvalues.yaml add data to file
+  blockinfile:
+    path: "/etc/promvalues.yaml"  
+    state: present
+    block: |
+      prometheus:
+        persistence:
+           enabled: true
+           size: 10Gi
+           storageClass: local-storage
+      grafana:
+        persistence:
+           enabled: true
+           size: 10Gi
+           storageClass: local-storage
+
 
 - name: Add prometheus/grafana repo, create  namespace, and install
   become: true  
@@ -95,8 +176,43 @@
       - "helm repo add prometheus-community https://prometheus-community.github.io/helm-charts"
       - "helm repo update"
       - "kubectl create ns prometheus-stack"
-      - "helm install -n prometheus-stack prometheus prometheus-community/kube-prometheus-stack"
+      - "helm install -n prometheus-stack prometheus prometheus-community/kube-prometheus-stack -f /etc/promvalues.yaml"
       - "kubectl patch svc prometheus-grafana -n prometheus-stack -p '[{\"op\":\"replace\",\"path\":\"/spec/type\",\"value\":\"LoadBalancer\"}]' --type='json'"
+
+- name: Create loki yaml file
+  file:
+      path: "/etc/lokipv.yaml"
+      state: touch
+
+- name: add loki persistent volume code to lokipv.yaml
+  blockinfile:
+    path: "/etc/lokipv.yaml"  
+    state: present
+    block: |	  
+      apiVersion: v1
+      kind: PersistentVolume
+      metadata:
+        finalizers:
+        - kubernetes.io/pv-protection
+        name: loki
+        namespace: prometheus-stack
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        capacity:
+          storage: 10Gi
+        hostPath:
+          path: /mnt
+          type: ""
+        persistentVolumeReclaimPolicy: Retain
+        storageClassName: local-storage
+        volumeMode: Filesystem
+
+- name: Create persistent volume for Loki
+  become: true
+  command: "{{ item }}"
+  with_items:
+      - "kubectl create -f /etc/loki.yaml"
 
 - name: Create lokivalues.yaml for loki
   file:
@@ -113,6 +229,10 @@
         enabled: true
         image:
           tag: '2.9.11'
+         securityContext:
+           runAsGroup: 0
+           runAsNonRoot: false
+           runAsUser: 0      
 
       promtail:
          enabled: true
@@ -134,5 +254,5 @@
   with_items:
       - "helm repo add grafana https://grafana.github.io/helm-charts"
       - "helm repo update"
-      - "helm upgrade --install loki grafana/loki-stack --values /etc/lokivalues.yaml -n prometheus-stack"
+      - "helm upgrade --install loki grafana/loki-stack --values /etc/lokivalues.yaml -n prometheus-stack --set loki.persistence.enabled=true"
       
