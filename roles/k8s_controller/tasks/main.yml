@@ -88,8 +88,8 @@
   with_items:
       - "helm repo add traefik https://traefik.github.io/charts"
       - "helm repo update"
-      - "kubectl create ns traefik-v2"
-      - "helm install -n traefik-v2 traefik traefik/traefik"
+      #- "kubectl create ns traefik-v2"
+      - "helm install -n kube-system traefik traefik/traefik"
 
 
 #- name: Install Calico network plugin
