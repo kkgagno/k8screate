@@ -13,7 +13,8 @@ mstr3 ansible_host=192.168.122.2
 
 [workers]
 wrkr1 ansible_host=192.168.122.247
-wrkr2 ansible_host=192.168.122.112#wrkr3 ansible_host=192.168.122.67
+wrkr2 ansible_host=192.168.122.112
+wrkr3 ansible_host=192.168.122.67
 
 
 
