@@ -693,7 +693,20 @@ ubtu24_ptrace_value: 1
 # Noe that the banner text must not contain the below items in order to be
 # compliant with CIS: \m, \r, \s, \v or references to the OS platform
 ubtu24cis_warning_banner: |
-        Authorized uses only. All activity may be monitored and reported.
+        # -----------------------------------------------------------------------------
+        # WARNING: Unauthorized Access Prohibited
+        # -----------------------------------------------------------------------------
+        # This system is for the exclusive use of authorized users associated with
+        # Nimbix/Eviden/Atos. All activities on this system are monitored and recorded.
+        # By accessing this system, you agree to comply with all applicable laws,
+        # regulations, and organizational policies.
+        #
+        # If you are not an authorized user, disconnect immediately. Unauthorized
+        # access may result in disciplinary action, legal consequences, or both.
+        #
+        # Authorized users must ensure their actions comply with security protocols and
+        # report any suspicious activity immediately to the system administrator.
+        # -----------------------------------------------------------------------------
 
 # This variable governs, whether dynamic motd is disabled (as required by control 1.7.1)
 ubtu24cis_disable_dynamic_motd: true
