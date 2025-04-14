@@ -88,68 +88,77 @@
       - "helm repo update"
       - "helm install kured kubereboot/kured --namespace kube-system -f /etc/kuredvalues.yaml"
 
-- name: Create storage class yaml on host
-  file:
-      path: "/etc/sc.yaml"
-      state: touch
-
-
-- name: storage class yaml add data to file
-  blockinfile:
-    path: "/etc/sc.yaml"  
-    state: present
-    block: |
-      apiVersion: storage.k8s.io/v1
-      kind: StorageClass
-      metadata:
-          name: local-storage
-          annotations:
-             storageclass.kubernetes.io/is-default-class: "true"
-      provisioner: kubernetes.io/no-provisioner
-      reclaimPolicy: Retain
-      allowVolumeExpansion: true
-      volumeBindingMode: Immediate
-
-- name: Create storage class
+- name: Add kured repo, create  namespace, and install
   become: true
   command: "{{ item }}"
   with_items:
-      - "kubectl create -f /etc/sc.yaml"
+      - "helm repo add nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner"
+      - "helm repo update"
+      - "helm install nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs-subdir-external-provisioner --set nfs.server=192.168.122.5 --set nfs.path=/data/nfs --set storageClass.onDelete=true"
+      - "kubectl patch storageclass nfs-client -p '{\"metadata\": {\"annotations\":{\"storageclass.kubernetes.io/is-default-class\":\"true\"}}}'"
 
-- name: Create prometheus persisten volume yaml on host
-  file:
-      path: "/etc/prompv.yaml"
-      state: touch
+#- name: Create storage class yaml on host
+#  file:
+#      path: "/etc/sc.yaml"
+#      state: touch
 
-- name: storage class yaml add data to file
-  blockinfile:
-    path: "/etc/prompv.yaml"  
-    state: present
-    block: |	  
-      apiVersion: v1
-      kind: PersistentVolume
-      metadata:
-        finalizers:
-        - kubernetes.io/pv-protection
-        name: prometheus-grafana
-        namespace: prometheus-stack
-      spec:
-        accessModes:
-        - ReadWriteOnce
-        capacity:
-          storage: 10Gi
-        hostPath:
-          path: /mnt
-          type: ""
-        persistentVolumeReclaimPolicy: Retain
-        storageClassName: local-storage
-        volumeMode: Filesystem
 
-- name: Create persistent volume for Prometheus-Grafana
-  become: true
-  command: "{{ item }}"
-  with_items:
-      - "kubectl create -f /etc/prompv.yaml"
+#- name: storage class yaml add data to file
+#  blockinfile:
+#    path: "/etc/sc.yaml"  
+#    state: present
+#    block: |
+#      apiVersion: storage.k8s.io/v1
+#      kind: StorageClass
+#      metadata:
+#          name: local-storage
+#          annotations:
+#             storageclass.kubernetes.io/is-default-class: "true"
+#      provisioner: kubernetes.io/no-provisioner
+#      reclaimPolicy: Retain
+#      allowVolumeExpansion: true
+#      volumeBindingMode: Immediate
+
+#- name: Create storage class
+#  become: true
+#  command: "{{ item }}"
+#  with_items:
+#      - "kubectl create -f /etc/sc.yaml"
+
+#- name: Create prometheus persisten volume yaml on host
+#  file:
+#      path: "/etc/prompv.yaml"
+#      state: touch
+
+#- name: storage class yaml add data to file
+#  blockinfile:
+#    path: "/etc/prompv.yaml"  
+#    state: present
+#    block: |	  
+#      apiVersion: v1
+#      kind: PersistentVolume
+#      metadata:
+#        finalizers:
+#        - kubernetes.io/pv-protection
+#        name: prometheus-grafana
+#        namespace: prometheus-stack
+#      spec:
+#        accessModes:
+#        - ReadWriteOnce
+#        capacity:
+#          storage: 10Gi
+#        hostPath:
+#          path: /mnt
+#          type: ""
+#        persistentVolumeReclaimPolicy: Retain
+#        storageClassName: local-storage
+#        volumeMode: Filesystem
+
+#- name: Create persistent volume for Prometheus-Grafana
+#  become: true
+#  command: "{{ item }}"
+#  with_items:
+#      - "kubectl create -f /etc/prompv.yaml"
 
 
 - name: Create prometheus yaml on host
@@ -167,12 +176,12 @@
         persistence:
            enabled: true
            size: 10Gi
-           storageClass: local-storage
+           storageClass: nfs-client
       grafana:
         persistence:
            enabled: true
            size: 10Gi
-           storageClass: local-storage
+           storageClass: nfs-client
 
 
 - name: Add prometheus/grafana repo, create  namespace, and install
@@ -185,40 +194,40 @@
       - "helm install -n prometheus-stack prometheus prometheus-community/kube-prometheus-stack -f /etc/promvalues.yaml"
       - "kubectl patch svc prometheus-grafana -n prometheus-stack -p '[{\"op\":\"replace\",\"path\":\"/spec/type\",\"value\":\"LoadBalancer\"}]' --type='json'"
 
-- name: Create loki persistent volume yaml file
-  file:
-      path: "/etc/lokipv.yaml"
-      state: touch
+#- name: Create loki persistent volume yaml file
+#  file:
+#      path: "/etc/lokipv.yaml"
+#      state: touch
 
-- name: add loki persistent volume code to lokipv.yaml
-  blockinfile:
-    path: "/etc/lokipv.yaml"  
-    state: present
-    block: |	  
-      apiVersion: v1
-      kind: PersistentVolume
-      metadata:
-        finalizers:
-        - kubernetes.io/pv-protection
-        name: loki
-        namespace: prometheus-stack
-      spec:
-        accessModes:
-        - ReadWriteOnce
-        capacity:
-          storage: 10Gi
-        hostPath:
-          path: /mnt
-          type: ""
-        persistentVolumeReclaimPolicy: Retain
-        storageClassName: local-storage
-        volumeMode: Filesystem
+#- name: add loki persistent volume code to lokipv.yaml
+#  blockinfile:
+#    path: "/etc/lokipv.yaml"  
+#    state: present
+#    block: |	  
+#      apiVersion: v1
+#      kind: PersistentVolume
+#      metadata:
+#        finalizers:
+#        - kubernetes.io/pv-protection
+#        name: loki
+#        namespace: prometheus-stack
+#      spec:
+#        accessModes:
+#        - ReadWriteOnce
+#        capacity:
+#          storage: 10Gi
+#        hostPath:
+#          path: /mnt
+#          type: ""
+#        persistentVolumeReclaimPolicy: Retain
+#        storageClassName: local-storage
+#        volumeMode: Filesystem
 
-- name: Create persistent volume for Loki
-  become: true
-  command: "{{ item }}"
-  with_items:
-      - "kubectl create -f /etc/lokipv.yaml"
+#- name: Create persistent volume for Loki
+#  become: true
+#  command: "{{ item }}"
+#  with_items:
+#      - "kubectl create -f /etc/lokipv.yaml"
 
 - name: Create lokivalues.yaml for loki
   file:
@@ -238,7 +247,10 @@
         securityContext:
           runAsGroup: 0
           runAsNonRoot: false
-          runAsUser: 0      
+          runAsUser: 0
+        persistence:
+          enabled: true
+          storageClassName: 'nfs-client'      
 
       promtail:
          enabled: true
@@ -260,5 +272,6 @@
   with_items:
       - "helm repo add grafana https://grafana.github.io/helm-charts"
       - "helm repo update"
-      - "helm upgrade --install loki grafana/loki-stack --values /etc/lokivalues.yaml -n prometheus-stack --set loki.persistence.enabled=true"
+      - "helm upgrade --install loki grafana/loki-stack --values /etc/lokivalues.yaml -n prometheus-stack"
+      #- "helm upgrade --install loki grafana/loki-stack --values /etc/lokivalues.yaml -n prometheus-stack --set loki.persistence.enabled=true set loki.persistence.storageClassName=nfs-client"
       
