@@ -76,9 +76,16 @@
     path: "/etc/kuredvalues.yaml"  
     state: present
     block: |
-      window_start: “22:00”
-      window_end: “06:00”
-      reboot_days: “mon,tue,wed,thu,fri”
+      extraArgs:
+        reboot-days: mon,tue,wed,thu
+        start-time: 00:00
+        end-time: 06:00
+        time-zone: America/New_York
+      serviceAccount:
+        create: true
+        name: kured
+      updateStrategy: RollingUpdate
+
 
 - name: Add kured repo, create  namespace, and install
   become: true
