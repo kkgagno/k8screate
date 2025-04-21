@@ -24,7 +24,7 @@
 - name: Update apt repo and cache on all Debian/Ubuntu boxes
   apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
 
-- name: Install kubeadm, kubelet, and kubectl
+- name: Install kubeadm and kubectl
   apt:
     name: "{{ item }}"
     state: present
@@ -39,9 +39,9 @@
   become: true
   command: "{{ item }}"
   with_items:
-      - "sudo mkdir -p $HOME/.kube"
-      - "sudo chown -R $USER $HOME/.kube"
-      - "sudo cp /etc/kubeconfig /$HOME/.kube/config"
+      - "sudo mkdir -p /root/.kube"
+      - "sudo chown -R root /root/.kube"
+      - "sudo cp /etc/kubeconfig /root/.kube/config"
 
 
 - name: Download cilium
@@ -54,7 +54,7 @@
   ansible.builtin.unarchive:
     src: /etc/cilium-linux-amd64.tar.gz
     dest: /usr/local/bin
-    remote_src: yes
+    #remote_src: yes
 
 - name: Remove file (delete file)
   ansible.builtin.file:
@@ -79,7 +79,7 @@
   ansible.builtin.unarchive:
     src: /etc/helm-v3.16.3-linux-amd64.tar.gz
     dest: $HOME/
-    remote_src: yes
+    #remote_src: yes
 
 - name: Remove helm tar file (delete file)
   ansible.builtin.file:
@@ -90,7 +90,7 @@
   ansible.builtin.copy:
     src: $HOME/linux-amd64/
     dest: /usr/local/bin/
-    remote_src: yes
+    #remote_src: yes
 
 - name: Add traefik repo, create traefik namespace, and install traefik
   become: true
