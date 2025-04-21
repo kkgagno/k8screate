@@ -31,7 +31,6 @@
     update_cache: true
   loop:
     - kubeadm
-    - kubelet
     - kubectl
 
 
