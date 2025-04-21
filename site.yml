@@ -1,7 +1,0 @@
----
-
-- name: Run CIS benchmark
-  hosts: all
-  become: true
-  roles:
-    - role: "{{ playbook_dir }}"
