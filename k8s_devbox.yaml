@@ -2,4 +2,4 @@
   - hosts: localhost
     become: yes
     roles:
-      - { role: k8s_metallb }
+      - { role: k8s_devbox }

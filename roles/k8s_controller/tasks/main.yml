@@ -34,67 +34,7 @@
       # - "sudo chown $(id -u):$(id -g) $HOME/.kube/config"
       - "sudo chown -R $USER $HOME/.kube"
 
-- name: Download cilium
-  ansible.builtin.get_url:
-    url: https://github.com/cilium/cilium-cli/releases/download/v0.16.22/cilium-linux-amd64.tar.gz
-    dest: /etc/cilium-linux-amd64.tar.gz
-    mode: '0440'
 
-- name: Extract cilium.tgz into /usr/local/bin
-  ansible.builtin.unarchive:
-    src: /etc/cilium-linux-amd64.tar.gz
-    dest: /usr/local/bin
-    remote_src: yes
-
-- name: Remove file (delete file)
-  ansible.builtin.file:
-    path: /etc/cilium-linux-amd64.tar.gz
-    state: absent
-
-- name: install cilium
-  shell: "cilium install --set ipam.operator.clusterPoolIPv4PodCIDRList={{ vardata.podnetwork }} --set ipv6.enabled=false"
-  register: cilium
-- debug:
-     msg:
-      - "{{ cilium.stdout }}"
-
-
-- name: Download Helm
-  ansible.builtin.get_url:
-    url: https://get.helm.sh/helm-v3.16.3-linux-amd64.tar.gz
-    dest: /etc/helm-v3.16.3-linux-amd64.tar.gz
-    mode: '0440'
-
-- name: Extract helm.gz 
-  ansible.builtin.unarchive:
-    src: /etc/helm-v3.16.3-linux-amd64.tar.gz
-    dest: $HOME/
-    remote_src: yes
-
-- name: Remove helm tar file (delete file)
-  ansible.builtin.file:
-    path: /etc/helm-v3.16.3-linux-amd64.tar.gz
-    state: absent
-
-- name: Copy file with owner and permissions
-  ansible.builtin.copy:
-    src: $HOME/linux-amd64/
-    dest: /usr/local/bin/
-    remote_src: yes
-
-- name: Add traefik repo, create traefik namespace, and install traefik
-  become: true
-  command: "{{ item }}"
-  with_items:
-      - "helm repo add traefik https://traefik.github.io/charts"
-      - "helm repo update"
-      #- "kubectl create ns traefik-v2"
-      - "helm install -n kube-system traefik traefik/traefik"
-
-
-#- name: Install Calico network plugin
-#  become: no
-#  shell: "kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml"
 
 
 

@@ -27,10 +27,10 @@
 
 
 - name: Add to cluster
-  become: yes
+  become: true
   command: "{{ command_output.stdout }}"
   register: join_result
-  ignore_errors: yes
+  ignore_errors: true
 - set_fact:     
    joinresult = "{{ join_result.stdout }}"
 - debug:
@@ -48,33 +48,33 @@
      - "{{ command_output.stdout }}"
 
 - name: Set up kubectl for the current user
-  become: no
+  become: false
   command: "{{ item }}"
   with_items:
       - "sudo mkdir -p $HOME/.kube"
       - "sudo chown -R $USER $HOME/.kube"
 
 - name: kubecfg create local file
-  become: no
+  become: false
   file:
       path: "$HOME/.kube/config"
       state: touch
       
 - name: add master kubeconfig local
-  become: no
+  become: false
   copy:
     content: "{{ command_output.stdout }}"
     dest: "$HOME/.kube/config"
 
 - name: Set up kubectl for the root user
-  become: yes
+  become: true
   command: "{{ item }}"
   with_items:
       - "sudo mkdir -p $HOME/.kube"
       - "sudo chown -R $USER $HOME/.kube"
 
 - name: add master kubeconfig local root
-  become: yes
+  become: true
   copy:
     content: "{{ command_output.stdout }}"
     dest: "$HOME/.kube/config"
