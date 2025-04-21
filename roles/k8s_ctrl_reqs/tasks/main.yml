@@ -157,14 +157,14 @@
   #   msg:
   #     - "{{ key.stdout }}"
 
-- name: Delete banner file before copy
-  file:
-    path: "/etc/issue.net"
-    state: absent
+#- name: Delete banner file before copy
+#  file:
+#    path: "/etc/issue.net"
+#    state: absent
 
-- name: Create new banner file
-  file:
-      path: "/etc/issue.net"
-      state: touch
+#- name: Create new banner file
+#  file:
+#      path: "/etc/issue.net"
+#      state: touch
       
 
