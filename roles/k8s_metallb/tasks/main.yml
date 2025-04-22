@@ -99,7 +99,7 @@
   with_items:
       - "helm repo add kubereboot https://kubereboot.github.io/charts"
       - "helm repo update"
-      - "helm install kured kubereboot/kured --namespace kube-system -f /etc/kuredvalues.yaml"
+      - "helm install kured kubereboot/kured --namespace kube-system -f /etc/kuredvalues.yaml --kubeconfig /root/.kube/config" 
 
 - name: Add nfs provisioner and install
   become: true
@@ -107,7 +107,7 @@
   with_items:
       - "helm repo add nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner"
       - "helm repo update"
-      - "helm install nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs-subdir-external-provisioner --set nfs.server=192.168.122.5 --set nfs.path=/data/nfs --set storageClass.onDelete=true"
+      - "helm install nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs-subdir-external-provisioner --set nfs.server=192.168.122.5 --set nfs.path=/data/nfs --set storageClass.onDelete=true --kubeconfig /root/.kube/config"
       - "kubectl patch storageclass nfs-client -p '{\"metadata\": {\"annotations\":{\"storageclass.kubernetes.io/is-default-class\":\"true\"}}}'"
 
 #- name: Create storage class yaml on host
@@ -204,7 +204,7 @@
       - "helm repo add prometheus-community https://prometheus-community.github.io/helm-charts"
       - "helm repo update"
       - "kubectl create ns prometheus-stack"
-      - "helm install -n prometheus-stack prometheus prometheus-community/kube-prometheus-stack -f /etc/promvalues.yaml"
+      - "helm install -n prometheus-stack prometheus prometheus-community/kube-prometheus-stack -f /etc/promvalues.yaml --kubeconfig /root/.kube/config"
       - "kubectl patch svc prometheus-grafana -n prometheus-stack -p '[{\"op\":\"replace\",\"path\":\"/spec/type\",\"value\":\"LoadBalancer\"}]' --type='json'"
 
 #- name: Create loki persistent volume yaml file
@@ -285,6 +285,6 @@
 #  with_items:
 #      - "helm repo add grafana https://grafana.github.io/helm-charts"
 #      - "helm repo update"
-#      - "helm upgrade --install loki grafana/loki-stack --values /etc/lokivalues.yaml -n prometheus-stack"
+#      - "helm upgrade --install loki grafana/loki-stack --values /etc/lokivalues.yaml -n prometheus-stack --kubeconfig /root/.kube/config"
 #      #- "helm upgrade --install loki grafana/loki-stack --values /etc/lokivalues.yaml -n prometheus-stack --set loki.persistence.enabled=true set loki.persistence.storageClassName=nfs-client"
       
