@@ -21,13 +21,13 @@
   become: true
   shell: "{{ item }}"
   with_items: 
-    - "kubectl rollout restart deployment coredns -n kube-system"
-    - "kubectl wait --for=condition=Ready pods --all -n kube-system --timeout 480s"   
+    - "kubectl rollout restart deployment coredns -n kube-system --kubeconfig /root/.kube/config"
+    - "kubectl wait --for=condition=Ready pods --all -n kube-system --timeout 480s --kubeconfig /root/.kube/config"   
   ignore_errors: true
   
 - name: Install Metallb
   become: false
-  shell: "kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.8/config/manifests/metallb-native.yaml"
+  shell: "kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.8/config/manifests/metallb-native.yaml --kubeconfig /root/.kube/config"
 
 - name: Create metallb.yaml on host
   file:
@@ -67,8 +67,8 @@
   become: true
   shell: "{{ item }}"
   with_items: 
-    - "kubectl wait --for=condition=Ready pods --all -n metallb-system --timeout 480s"
-    - "kubectl apply -f metallb.yaml"
+    - "kubectl wait --for=condition=Ready pods --all -n metallb-system --timeout 480s --kubeconfig /root/.kube/config"
+    - "kubectl apply -f metallb.yaml --kubeconfig /root/.kube/config"
 
 
 - name: Create values.yaml for kured
@@ -108,7 +108,7 @@
       - "helm repo add nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner"
       - "helm repo update"
       - "helm install nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs-subdir-external-provisioner --set nfs.server=192.168.122.5 --set nfs.path=/data/nfs --set storageClass.onDelete=true --kubeconfig /root/.kube/config"
-      - "kubectl patch storageclass nfs-client -p '{\"metadata\": {\"annotations\":{\"storageclass.kubernetes.io/is-default-class\":\"true\"}}}'"
+      - "kubectl patch storageclass nfs-client -p '{\"metadata\": {\"annotations\":{\"storageclass.kubernetes.io/is-default-class\":\"true\"}}}' --kubeconfig /root/.kube/config"
 
 #- name: Create storage class yaml on host
 #  file:
