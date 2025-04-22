@@ -1,3 +1,9 @@
+- name: Import vars
+  run_once: true
+  include_vars:
+    file: k8svars.yml
+    name: vardata
+
 - name: Check if metallb is running
   shell: "kubectl get namespace |grep metallb-system"
   register: running_process

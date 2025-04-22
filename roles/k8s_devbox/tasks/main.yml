@@ -62,6 +62,7 @@
     state: absent
 
 - name: install cilium
+  become: true
   shell: "cilium install --set ipam.operator.clusterPoolIPv4PodCIDRList={{ vardata.podnetwork }} --set ipv6.enabled=false"
   register: cilium
 - debug:
@@ -70,26 +71,31 @@
 
 
 - name: Download Helm
+  become: true
   ansible.builtin.get_url:
     url: https://get.helm.sh/helm-v3.16.3-linux-amd64.tar.gz
     dest: /etc/helm-v3.16.3-linux-amd64.tar.gz
     mode: '0440'
 
-- name: Extract helm.gz 
+- name: Extract helm.gz
+  become: true
   ansible.builtin.unarchive:
     src: /etc/helm-v3.16.3-linux-amd64.tar.gz
-    dest: $HOME/
+    dest: /root/
     #remote_src: yes
 
 - name: Remove helm tar file (delete file)
+  become: true
   ansible.builtin.file:
     path: /etc/helm-v3.16.3-linux-amd64.tar.gz
     state: absent
 
 - name: Copy file with owner and permissions
+  become: true
   ansible.builtin.copy:
-    src: $HOME/linux-amd64/
+    src: /root/linux-amd64/
     dest: /usr/local/bin/
+    mode: '0700'
     #remote_src: yes
 
 - name: Add traefik repo, create traefik namespace, and install traefik
