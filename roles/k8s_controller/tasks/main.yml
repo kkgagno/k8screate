@@ -44,7 +44,7 @@
   ansible.builtin.unarchive:
     src: /etc/cilium-linux-amd64.tar.gz
     dest: /usr/local/bin
-    #remote_src: yes
+    remote_src: yes
 
 - name: Remove file (delete file)
   ansible.builtin.file:
