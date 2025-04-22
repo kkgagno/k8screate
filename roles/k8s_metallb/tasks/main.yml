@@ -203,9 +203,9 @@
   with_items:
       - "helm repo add prometheus-community https://prometheus-community.github.io/helm-charts"
       - "helm repo update"
-      - "kubectl create ns prometheus-stack"
+      - "kubectl create ns prometheus-stack --kubeconfig /root/.kube/config"
       - "helm install -n prometheus-stack prometheus prometheus-community/kube-prometheus-stack -f /etc/promvalues.yaml --kubeconfig /root/.kube/config"
-      - "kubectl patch svc prometheus-grafana -n prometheus-stack -p '[{\"op\":\"replace\",\"path\":\"/spec/type\",\"value\":\"LoadBalancer\"}]' --type='json'"
+      - "kubectl patch svc prometheus-grafana -n prometheus-stack -p '[{\"op\":\"replace\",\"path\":\"/spec/type\",\"value\":\"LoadBalancer\"}]' --type='json' --kubeconfig /root/.kube/config"
 
 #- name: Create loki persistent volume yaml file
 #  file:
