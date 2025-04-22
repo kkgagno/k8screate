@@ -186,10 +186,15 @@
     state: present
     block: |
       prometheus:
-        persistence:
-           enabled: true
-           size: 10Gi
-           storageClass: nfs-client
+        storage:
+          volumeClaimTemplate:
+           spec:
+             storageClassName: nfs-client
+             accessModes: ["ReadWriteONce"]
+             resources:
+               requests:
+                 storage: 10Gi
+
       grafana:
         persistence:
            enabled: true
