@@ -114,6 +114,8 @@
   with_items:
       - "helm repo add traefik https://traefik.github.io/charts"
       - "helm repo update"
+      - "mkdir ~/.kube"
+      - "mkdir ~/.kube/config"
       - "kubectl config view --raw >~/.kube/config"
       #- "kubectl create ns traefik-v2"
       - "helm install -n kube-system traefik traefik/traefik"
