@@ -119,7 +119,7 @@
       #- "mkdir ~/.kube"     
       #- "kubectl config view --raw >~/.kube/config"
       #- "kubectl create ns traefik-v2"
-      - "helm install -n kube-system traefik traefik/traefik"
+      - "helm install -n kube-system traefik traefik/traefik --kubeconfig /root/.kube/config"
 
 
 #- name: Install Calico network plugin
