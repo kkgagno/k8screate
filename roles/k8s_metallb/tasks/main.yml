@@ -248,43 +248,43 @@
       state: touch
       
 
-- name: lokivalues.yaml add data to file
-  blockinfile:
-    path: "/etc/lokivalues.yaml"  
-    state: present
-    block: |
-      loki:
-        enabled: true
-        image:
-          tag: '2.9.11'
-        securityContext:
-          runAsGroup: 0
-          runAsNonRoot: false
-          runAsUser: 0
-        persistence:
-          enabled: true
-          storageClassName: 'nfs-client'      
+#- name: lokivalues.yaml add data to file
+#  blockinfile:
+#    path: "/etc/lokivalues.yaml"  
+#    state: present
+#    block: |
+#      loki:
+#        enabled: true
+#        image:
+#          tag: '2.9.11'
+#        securityContext:
+#          runAsGroup: 0
+#          runAsNonRoot: false
+#          runAsUser: 0
+#        persistence:
+#          enabled: true
+#          storageClassName: 'nfs-client'     
 
-      promtail:
-         enabled: true
+#      promtail:
+#         enabled: true
 
-      fluent-bit:
-        enabled: false
+#      fluent-bit:
+#        enabled: false
 
-      grafana:
-        enabled: false
+#     grafana:
+#       enabled: false
 
 #      prometheus:
 #        enabled: false
      
 
 
-- name: Add Loki to prometheus stack
-  become: true
-  command: "{{ item }}"
-  with_items:
-      - "helm repo add grafana https://grafana.github.io/helm-charts"
-      - "helm repo update"
-      - "helm upgrade --install loki grafana/loki-stack --values /etc/lokivalues.yaml -n prometheus-stack"
-      #- "helm upgrade --install loki grafana/loki-stack --values /etc/lokivalues.yaml -n prometheus-stack --set loki.persistence.enabled=true set loki.persistence.storageClassName=nfs-client"
+#- name: Add Loki to prometheus stack
+#  become: true
+#  command: "{{ item }}"
+#  with_items:
+#      - "helm repo add grafana https://grafana.github.io/helm-charts"
+#      - "helm repo update"
+#      - "helm upgrade --install loki grafana/loki-stack --values /etc/lokivalues.yaml -n prometheus-stack"
+#      #- "helm upgrade --install loki grafana/loki-stack --values /etc/lokivalues.yaml -n prometheus-stack --set loki.persistence.enabled=true set loki.persistence.storageClassName=nfs-client"
       
