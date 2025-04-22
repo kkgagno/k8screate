@@ -34,7 +34,30 @@
       # - "sudo chown $(id -u):$(id -g) $HOME/.kube/config"
       - "sudo chown -R $USER $HOME/.kube"
 
+- name: Download cilium
+  ansible.builtin.get_url:
+    url: https://github.com/cilium/cilium-cli/releases/download/v0.16.22/cilium-linux-amd64.tar.gz
+    dest: /etc/cilium-linux-amd64.tar.gz
+    mode: '0440'
 
+- name: Extract cilium.tgz into /usr/local/bin
+  ansible.builtin.unarchive:
+    src: /etc/cilium-linux-amd64.tar.gz
+    dest: /usr/local/bin
+    #remote_src: yes
+
+- name: Remove file (delete file)
+  ansible.builtin.file:
+    path: /etc/cilium-linux-amd64.tar.gz
+    state: absent
+
+- name: install cilium
+  become: true
+  shell: "cilium install --set ipam.operator.clusterPoolIPv4PodCIDRList={{ vardata.podnetwork }} --set ipv6.enabled=false"
+  register: cilium
+- debug:
+     msg:
+      - "{{ cilium.stdout }}"
 
 
 
