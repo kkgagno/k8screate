@@ -44,30 +44,30 @@
       - "sudo cp /etc/kubeconfig /root/.kube/config"
 
 
-- name: Download cilium
-  ansible.builtin.get_url:
-    url: https://github.com/cilium/cilium-cli/releases/download/v0.16.22/cilium-linux-amd64.tar.gz
-    dest: /etc/cilium-linux-amd64.tar.gz
-    mode: '0440'
+#- name: Download cilium
+#  ansible.builtin.get_url:
+#    url: https://github.com/cilium/cilium-cli/releases/download/v0.16.22/cilium-linux-amd64.tar.gz
+#    dest: /etc/cilium-linux-amd64.tar.gz
+#    mode: '0440'
 
-- name: Extract cilium.tgz into /usr/local/bin
-  ansible.builtin.unarchive:
-    src: /etc/cilium-linux-amd64.tar.gz
-    dest: /usr/local/bin
-    #remote_src: yes
+#- name: Extract cilium.tgz into /usr/local/bin
+#  ansible.builtin.unarchive:
+#    src: /etc/cilium-linux-amd64.tar.gz
+#    dest: /usr/local/bin
+#    #remote_src: yes
 
-- name: Remove file (delete file)
-  ansible.builtin.file:
-    path: /etc/cilium-linux-amd64.tar.gz
-    state: absent
+#- name: Remove file (delete file)
+#  ansible.builtin.file:
+#    path: /etc/cilium-linux-amd64.tar.gz
+#    state: absent
 
-- name: install cilium
-  become: true
-  shell: "cilium install --set ipam.operator.clusterPoolIPv4PodCIDRList={{ vardata.podnetwork }} --set ipv6.enabled=false"
-  register: cilium
-- debug:
-     msg:
-      - "{{ cilium.stdout }}"
+#- name: install cilium
+#  become: true
+#  shell: "cilium install --set ipam.operator.clusterPoolIPv4PodCIDRList={{ vardata.podnetwork }} --set ipv6.enabled=false"
+#  register: cilium
+#- debug:
+#     msg:
+#      - "{{ cilium.stdout }}"
 
 
 - name: Download Helm
@@ -98,7 +98,16 @@
     mode: '0700'
     #remote_src: yes
 
-- name: Add traefik repo, create traefik namespace, and install traefik
+- name: Add cilium repo and install cilium
+  become: true
+  command: "{{ item }}"
+  with_items:
+      - "helm repo add cilium https://helm.cilium.io/"
+      - "helm repo update"     
+      - "helm install cilium cilium/cilium --version 1.16.4 --namespace kube-system"
+
+
+- name: Add traefik repo and install traefik
   become: true
   command: "{{ item }}"
   with_items:
