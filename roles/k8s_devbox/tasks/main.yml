@@ -110,7 +110,7 @@
 
 - name: Add traefik repo and install traefik
   become: true
-  command: "{{ item }}"
+  shell: "{{ item }}"
   with_items:
       - "helm repo add traefik https://traefik.github.io/charts"
       - "helm repo update"
