@@ -209,43 +209,43 @@
       - "helm repo add prometheus-community https://prometheus-community.github.io/helm-charts"
       - "helm repo update"
       - "kubectl create ns prometheus-stack --kubeconfig /root/.kube/config"
-      - "helm install -n prometheus-stack prometheus prometheus-community/kube-prometheus-stack -f /etc/promvalues.yaml --kubeconfig /root/.kube/config"
+      - "helm install -n prometheus-stack prometheus prometheus-community/kube-prometheus-stack -f k8s_promvalues.yaml --kubeconfig /root/.kube/config"
       - "kubectl patch svc prometheus-grafana -n prometheus-stack -p '[{\"op\":\"replace\",\"path\":\"/spec/type\",\"value\":\"LoadBalancer\"}]' --type='json' --kubeconfig /root/.kube/config"
 
-#- name: Create loki persistent volume yaml file
-#  file:
-#      path: "/etc/lokipv.yaml"
-#      state: touch
+- name: Create loki persistent volume yaml file
+  file:
+      path: "/etc/lokipv.yaml"
+      state: touch
 
-#- name: add loki persistent volume code to lokipv.yaml
-#  blockinfile:
-#    path: "/etc/lokipv.yaml"  
-#    state: present
-#    block: |	  
-#      apiVersion: v1
-#      kind: PersistentVolume
-#      metadata:
-#        finalizers:
-#        - kubernetes.io/pv-protection
-#        name: loki
-#        namespace: prometheus-stack
-#      spec:
-#        accessModes:
-#        - ReadWriteOnce
-#        capacity:
-#          storage: 10Gi
-#        hostPath:
-#          path: /mnt
-#          type: ""
-#        persistentVolumeReclaimPolicy: Retain
-#        storageClassName: local-storage
-#        volumeMode: Filesystem
+- name: add loki persistent volume code to lokipv.yaml
+  blockinfile:
+    path: "/etc/lokipv.yaml"  
+    state: present
+    block: |	  
+      apiVersion: v1
+      kind: PersistentVolume
+      metadata:
+        finalizers:
+        - kubernetes.io/pv-protection
+        name: loki
+        namespace: prometheus-stack
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        capacity:
+          storage: 10Gi
+        hostPath:
+          path: /mnt
+          type: ""
+        persistentVolumeReclaimPolicy: Retain
+        storageClassName: local-storage
+        volumeMode: Filesystem
 
-#- name: Create persistent volume for Loki
-#  become: true
-#  command: "{{ item }}"
-#  with_items:
-#      - "kubectl create -f /etc/lokipv.yaml"
+- name: Create persistent volume for Loki
+  become: true
+  command: "{{ item }}"
+  with_items:
+      - "kubectl create -f /etc/lokipv.yaml"
 
 - name: Create lokivalues.yaml for loki
   file:
@@ -253,43 +253,43 @@
       state: touch
       
 
-#- name: lokivalues.yaml add data to file
-#  blockinfile:
-#    path: "/etc/lokivalues.yaml"  
-#    state: present
-#    block: |
-#      loki:
-#        enabled: true
-#        image:
-#          tag: '2.9.11'
-#        securityContext:
-#          runAsGroup: 0
-#          runAsNonRoot: false
-#          runAsUser: 0
-#        persistence:
-#          enabled: true
-#          storageClassName: 'nfs-client'     
+- name: lokivalues.yaml add data to file
+  blockinfile:
+    path: "/etc/lokivalues.yaml"  
+    state: present
+    block: |
+      loki:
+        enabled: true
+        image:
+          tag: '2.9.11'
+        securityContext:
+          runAsGroup: 0
+          runAsNonRoot: false
+          runAsUser: 0
+        persistence:
+          enabled: true
+          storageClassName: 'nfs-client'     
 
-#      promtail:
-#         enabled: true
+      promtail:
+         enabled: true
 
-#      fluent-bit:
-#        enabled: false
+      fluent-bit:
+        enabled: false
 
-#     grafana:
-#       enabled: false
+      grafana:
+        enabled: false
 
-#      prometheus:
-#        enabled: false
+       prometheus:
+         enabled: false
      
 
 
-#- name: Add Loki to prometheus stack
-#  become: true
-#  command: "{{ item }}"
-#  with_items:
-#      - "helm repo add grafana https://grafana.github.io/helm-charts"
-#      - "helm repo update"
-#      - "helm upgrade --install loki grafana/loki-stack --values /etc/lokivalues.yaml -n prometheus-stack --kubeconfig /root/.kube/config"
-#      #- "helm upgrade --install loki grafana/loki-stack --values /etc/lokivalues.yaml -n prometheus-stack --set loki.persistence.enabled=true set loki.persistence.storageClassName=nfs-client"
+- name: Add Loki to prometheus stack
+  become: true
+  command: "{{ item }}"
+  with_items:
+      - "helm repo add grafana https://grafana.github.io/helm-charts"
+      - "helm repo update"
+      - "helm upgrade --install loki grafana/loki-stack --values /etc/lokivalues.yaml -n prometheus-stack --kubeconfig /root/.kube/config"
+      #- "helm upgrade --install loki grafana/loki-stack --values /etc/lokivalues.yaml -n prometheus-stack --set loki.persistence.enabled=true set loki.persistence.storageClassName=nfs-client"
       
