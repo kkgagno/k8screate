@@ -212,40 +212,40 @@
       - "helm install -n prometheus-stack prometheus prometheus-community/kube-prometheus-stack -f k8s_promvalues.yaml --kubeconfig /root/.kube/config"
       - "kubectl patch svc prometheus-grafana -n prometheus-stack -p '[{\"op\":\"replace\",\"path\":\"/spec/type\",\"value\":\"LoadBalancer\"}]' --type='json' --kubeconfig /root/.kube/config"
 
-- name: Create loki persistent volume yaml file
-  file:
-      path: "/etc/lokipv.yaml"
-      state: touch
+#- name: Create loki persistent volume yaml file
+#  file:
+#      path: "/etc/lokipv.yaml"
+#      state: touch
 
-- name: add loki persistent volume code to lokipv.yaml
-  blockinfile:
-    path: "/etc/lokipv.yaml"  
-    state: present
-    block: |	  
-      apiVersion: v1
-      kind: PersistentVolume
-      metadata:
-        finalizers:
-        - kubernetes.io/pv-protection
-        name: loki
-        namespace: prometheus-stack
-      spec:
-        accessModes:
-        - ReadWriteOnce
-        capacity:
-          storage: 10Gi
-        hostPath:
-          path: /mnt
-          type: ""
-        persistentVolumeReclaimPolicy: Retain
-        storageClassName: local-storage
-        volumeMode: Filesystem
+#- name: add loki persistent volume code to lokipv.yaml
+#  blockinfile:
+#    path: "/etc/lokipv.yaml"  
+#    state: present
+#    block: |	  
+#      apiVersion: v1
+#      kind: PersistentVolume
+#      metadata:
+#        finalizers:
+#        - kubernetes.io/pv-protection
+#        name: loki
+#        namespace: prometheus-stack
+#      spec:
+#        accessModes:
+#        - ReadWriteOnce
+#        capacity:
+#          storage: 10Gi
+#        hostPath:
+#          path: /mnt
+#          type: ""
+#        persistentVolumeReclaimPolicy: Retain
+#        storageClassName: local-storage
+#        volumeMode: Filesystem
 
-- name: Create persistent volume for Loki
-  become: true
-  command: "{{ item }}"
-  with_items:
-      - "kubectl create -f /etc/lokipv.yaml"
+#- name: Create persistent volume for Loki
+#  become: true
+#  command: "{{ item }}"
+#  with_items:
+#      - "kubectl create -f /etc/lokipv.yaml"
 
 - name: Create lokivalues.yaml for loki
   file:
