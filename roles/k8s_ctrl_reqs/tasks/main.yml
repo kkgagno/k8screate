@@ -87,32 +87,32 @@
      sed -i 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/' /etc/sysctl.conf
      sysctl -p
 
-- name: Download Releasekey  
+- name: Download Releasekey
   become: true
   shell: "{{ item }}"
   with_items:
-    #- "export https_proxy=172.16.8.23:3128"
+    - "export https_proxy=172.16.8.23:3128"
     - "curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg --yes"
   environment:
     https_proxy: 172.16.8.23:3128
-  register: key
-- debug:
-     msg:
-       - "{{ key.stdout }}"
+      #  register: key
+    #- debug:
+    #     msg:
+    #       - "{{ key.stdout }}"
 
 - name: write to sources list
   become: true
   shell: "{{ item }}"
-  with_items: 
-    #- "export https_proxy=172.16.8.23:3128"
+  with_items:
+    - "export https_proxy=172.16.8.23:3128"
     - "echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list"
-    #- "export https_proxy="
+    - "export https_proxy="
   environment:
     https_proxy: 172.16.8.23:3128
-  register: list
-- debug:
-     msg:
-       - "{{ list.stdout }}"
+    # register: list
+    #- debug:
+    #     msg:
+    #       - "{{ list.stdout }}"
 
 
 - name: Update apt repo and cache on all Debian/Ubuntu boxes
