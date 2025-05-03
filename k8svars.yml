@@ -1,12 +1,12 @@
 #Pod network applied with Cilium
-podnetwork: 10.244.0.0/16
+podnetwork: 192.168.0.0/16
 #K8s Endpoint nginx LB
-nginxlb: 192.168.122.132
+nginxlb: 172.16.16.115
 #Metallb service IP range for services
-metallb: 192.168.122.240-192.168.122.250
+metallb: 172.16.16.240-172.16.16.250
 #control plane1, this is too populate config file for nginx LB
-controlplane1: 192.168.122.252
+controlplane1: 172.16.18.127
 #control plane2, this is too populate config file for nginx LB
-controlplane2: 192.168.122.161
+controlplane2: 72.16.18.128
 #control plane3, this is too populate config file for nginx LB
-controlplane3: 192.168.122.23
+controlplane3: 172.16.18.129

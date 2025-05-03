@@ -107,7 +107,7 @@
   with_items:
       - "helm repo add nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner"
       - "helm repo update"
-      - "helm install nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs-subdir-external-provisioner --set nfs.server=192.168.122.5 --set nfs.path=/data/nfs --set storageClass.onDelete=true --kubeconfig /root/.kube/config"
+      - "helm install nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs-subdir-external-provisioner --set nfs.server=172.16.16.115 --set nfs.path=/data/nfs --set storageClass.onDelete=true --kubeconfig /root/.kube/config"
       - "kubectl patch storageclass nfs-client -p '{\"metadata\": {\"annotations\":{\"storageclass.kubernetes.io/is-default-class\":\"true\"}}}' --kubeconfig /root/.kube/config"
 
 #- name: Create storage class yaml on host
