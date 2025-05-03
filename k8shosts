@@ -2,19 +2,28 @@
 localhost ansible_connection=local
 
 [endpoint]
-nginx ansible_host=192.168.122.132
+cbfnode16 ansible_host=172.16.16.115
 
 [master]
-mstr1 ansible_host=192.168.122.159
+cbfnode28 ansible_host=172.16.18.127
 
 [addl_controllers]
-mstr2 ansible_host=192.168.122.196
-mstr3 ansible_host=192.168.122.2
+cbfnode29 ansible_host=172.16.18.128
+cbfnode30 ansible_host=172.16.18.129
 
 [workers]
-wrkr1 ansible_host=192.168.122.247
-wrkr2 ansible_host=192.168.122.112
-wrkr3 ansible_host=192.168.122.67
+cbfnode16 ansible_host=172.16.16.115
+cbfnode17 ansible_host=172.16.16.116
+cbfnode18 ansible_host=172.16.16.117
+cbfnode19 ansible_host=172.16.16.118
+cbfnode20 ansible_host=172.16.16.119
+cbfnode21 ansible_host=172.16.16.120
+cbfnode22 ansible_host=172.16.16.121
+cbfnode23 ansible_host=172.16.16.122
+cbfnode24 ansible_host=172.16.16.123
+cbfnode25 ansible_host=172.16.16.124
+cbfnode26 ansible_host=172.16.16.125
+cbfnode27 ansible_host=172.16.16.126
 
 
 
