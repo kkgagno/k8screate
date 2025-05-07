@@ -3,7 +3,7 @@ podnetwork: 192.168.0.0/16
 #K8s Endpoint nginx LB
 nginxlb: 172.16.16.115
 #Metallb service IP range for services
-metallb: 172.16.16.240-172.16.16.250
+metallb: 172.16.16.200-172.16.16.240
 #control plane1, this is too populate config file for nginx LB
 controlplane1: 172.16.18.127
 #control plane2, this is too populate config file for nginx LB

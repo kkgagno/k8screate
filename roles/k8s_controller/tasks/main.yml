@@ -39,7 +39,9 @@
     url: https://github.com/cilium/cilium-cli/releases/download/v0.16.22/cilium-linux-amd64.tar.gz
     dest: /etc/cilium-linux-amd64.tar.gz
     mode: '0440'
-
+  environment:
+    https_proxy: 172.16.8.23:3128
+    
 - name: Extract cilium.tgz into /usr/local/bin
   ansible.builtin.unarchive:
     src: /etc/cilium-linux-amd64.tar.gz

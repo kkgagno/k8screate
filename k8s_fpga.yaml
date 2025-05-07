@@ -1,0 +1,5 @@
+---
+  - hosts: master, workers, addl_controllers
+    become: no
+    roles:
+      - { role: k8s_fpga }
