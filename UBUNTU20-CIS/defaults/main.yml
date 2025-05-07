@@ -315,7 +315,7 @@ ubtu20cis_rule_4_2_2: true
 ubtu20cis_rule_4_2_3: true
 ubtu20cis_rule_4_2_4: true
 ubtu20cis_rule_4_2_5: true
-ubtu20cis_rule_4_2_6: true
+ubtu20cis_rule_4_2_6: false
 ubtu20cis_rule_4_2_7: true
 ubtu20cis_rule_4_2_8: true
 ubtu20cis_rule_4_2_9: true
