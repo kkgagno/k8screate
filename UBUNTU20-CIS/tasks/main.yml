@@ -23,6 +23,13 @@
   tags:
     - always
 
+- name: time synch...for when restoring from snap
+  become: true
+  shell: "{{ item }}"
+  with_items:    
+    - "date -s \"$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z\""
+  register: command_output 
+
 - name: Check OS version and family
   ansible.builtin.assert:
       that: ansible_distribution == 'Ubuntu' and ansible_distribution_major_version is version_compare('20', '==')
