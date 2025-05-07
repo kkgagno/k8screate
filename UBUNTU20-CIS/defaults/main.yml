@@ -343,7 +343,7 @@ ubtu20cis_rule_4_4_1: true
 ubtu20cis_rule_4_4_2: true
 ubtu20cis_rule_4_4_3: true
 ubtu20cis_rule_4_4_4: true
-ubtu20cis_rule_4_4_5: true
+ubtu20cis_rule_4_4_5: false
 
 ubtu20cis_rule_4_5_1_1: true
 ubtu20cis_rule_4_5_1_2: true
