@@ -1,0 +1,6 @@
+kube_version: 1.30.12
+kube_network_plugin: cilium
+kube_pods_subnet: 192.168.0.0/16
+enable_coredns_k8s_external: false
+calico_network_backend: none
+enable_nodelocaldns: false
