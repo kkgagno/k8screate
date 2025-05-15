@@ -35,14 +35,14 @@
 
 
 
-- name: Set up kubectl for the root user
-  become: true
-  command: "{{ item }}"
-  with_items:
-      - "sudo mkdir -p /root/.kube"
-      - "sudo chown -R root /root/.kube"
-      - "sudo cp /etc/kubeconfig /root/.kube/config"
-      - "chmod 600 /root/.kube/config"
+#- name: Set up kubectl for the root user
+#  become: true
+#  command: "{{ item }}"
+#  with_items:
+#      - "sudo mkdir -p /root/.kube"
+#      - "sudo chown -R root /root/.kube"
+#      - "sudo cp /etc/kubeconfig /root/.kube/config"
+#      - "chmod 600 /root/.kube/config"
 
 
 #- name: Download cilium

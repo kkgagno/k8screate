@@ -1,0 +1,7 @@
+spec:
+  template:
+    spec:
+      tolerations:
+      - effect: NoSchedule
+        key: node-role.jarvice.io/jarvice-system
+        operator: Exists
